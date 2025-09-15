@@ -1,41 +1,42 @@
-# Nome do executável final
-EXEC = parser
+# Nome do executável final (vai ficar em src/)
+EXEC = src/interp
 
-# Arquivos-fonte do Bison e do Flex
-BISON_FILE = exemplo.y
-FLEX_FILE  = exemplo.l
+# Caminhos dos arquivos fonte
+BISON_FILE = parser/parser.y
+FLEX_FILE  = lexer/lexer.l
+MAIN_FILE  = src/main.c
 
-# Arquivos que o Bison vai gerar
-BISON_C   = exemplo.tab.c
-BISON_H   = exemplo.tab.h
+# Arquivos que o Bison vai gerar em src/
+BISON_C   = src/parser.tab.c
+BISON_H   = src/parser.tab.h
 
-# Arquivo gerado pelo Flex
-FLEX_C    = lex.yy.c
+# Arquivo gerado pelo Flex em src/
+FLEX_C    = src/lex.yy.c
 
 # Parâmetros opcionais ao Bison e Flex
-BISON_FLAGS = -d   # -d gera o arquivo .h (token definitions)
-FLEX_FLAGS  =      # deixe vazio ou acrescente opções se necessário
+BISON_FLAGS = -d -o $(BISON_C)   # -d gera .h, -o muda saída .c
+FLEX_FLAGS  = -o $(FLEX_C)       # gera lex.yy.c em src/
 
-# Parâmetros de compilação
+# Compilador e flags
 CC = gcc
-CFLAGS = 
-LDFLAGS = -lfl     # biblioteca do Flex
+CFLAGS =
+LDFLAGS = -lfl   # biblioteca do Flex
 
-# Regra padrão (alvo "all" vai gerar o executável)
+# Alvo padrão
 all: $(EXEC)
 
-# Regra para gerar o executável: depende dos arquivos C do Bison e do Flex
-$(EXEC): $(BISON_C) $(FLEX_C)
-	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(LDFLAGS)
+# Regra para gerar o executável
+$(EXEC): $(BISON_C) $(FLEX_C) $(MAIN_FILE)
+	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(MAIN_FILE) $(LDFLAGS)
 
-# Regra para rodar o Bison: gera exemplo.tab.c e exemplo.tab.h
+# Regra para rodar o Bison
 $(BISON_C) $(BISON_H): $(BISON_FILE)
 	bison $(BISON_FLAGS) $(BISON_FILE)
 
-# Regra para rodar o Flex: gera lex.yy.c
+# Regra para rodar o Flex
 $(FLEX_C): $(FLEX_FILE)
 	flex $(FLEX_FLAGS) $(FLEX_FILE)
 
-# Regra de limpeza: remove arquivos gerados
+# Limpeza
 clean:
 	rm -f $(EXEC) $(BISON_C) $(BISON_H) $(FLEX_C)

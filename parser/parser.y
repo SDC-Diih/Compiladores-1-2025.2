@@ -1,46 +1,104 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int yylex(void);
+typedef struct Var {
+    char *name;
+    int value;
+    struct Var *next;
+} Var;
+
+Var *symbolTable = NULL;
+
+int yylex();
 void yyerror(const char *s);
+
+Var* findVar(char *name) {
+    Var *v = symbolTable;
+    while(v) {
+        if(strcmp(v->name, name) == 0) {
+            return v;
+        }
+        v = v->next;
+    }
+    return NULL;
+}
+
+void addVar(char *name) {
+    if(findVar(name) != NULL) {
+        return; // já existe
+    }
+    Var *v = (Var*)malloc(sizeof(Var));
+    v->name = strdup(name);
+    v->value = 0;
+    v->next = symbolTable;
+    symbolTable = v;
+}
 %}
 
-/* Valor semântico dos tokens como int */
-%define api.value.type {int}
+%union {
+    int ival;
+    char *sval;
+}
 
-/* Declara tokens */
-%token NUM
-%token PLUS MINUS TIMES DIVIDE LPAREN RPAREN
+%token INT PRINT
+%token <ival> NUMBER
+%token <sval> ID
 
-/* Precedência e associatividade (da menor p/ maior) */
-%left PLUS MINUS
-%left TIMES DIVIDE
-%right UMINUS   /* para o - unário: -5, -(2+3) */
+%type <ival> expr   /* expr vai carregar inteiros */
+
+%left '+' '-'
+%left '*' '/'
 
 %%
 
-/* Uma expressão aritmética com precedência correta */
-expressao
-    : expressao PLUS   expressao    { $$ = $1 + $3; }
-    | expressao MINUS  expressao    { $$ = $1 - $3; }
-    | expressao TIMES  expressao    { $$ = $1 * $3; }
-    | expressao DIVIDE expressao    { $$ = $1 / $3; }
-    | LPAREN expressao RPAREN       { $$ = $2; }
-    | MINUS expressao %prec UMINUS  { $$ = -$2; }  /* -unário */
-    | NUM                           { $$ = $1; }
+program:
+      program stmt
+    | /* vazio */
+    ;
+
+stmt:
+      INT ID ';'            { addVar($2); }
+    | ID '=' expr ';'       {
+                                Var *v = findVar($1);
+                                if (v) {
+                                    v->value = $3; 
+                                } else {
+                                    printf("Erro: variavel %s nao declarada\n", $1);
+                                    exit(1);
+                                }
+                            }
+    | PRINT ID ';'          {
+                                Var *v = findVar($2);
+                                if (v) {
+                                    printf("%d\n", v->value);
+                                } else {
+                                    printf("Erro: variavel %s nao declarada\n", $2);
+                                    exit(1);
+                                }
+                            }
+    ;
+
+expr:
+      expr '+' expr         { $$ = $1 + $3; }
+    | expr '-' expr         { $$ = $1 - $3; }
+    | expr '*' expr         { $$ = $1 * $3; }
+    | expr '/' expr         { $$ = $1 / $3; }
+    | NUMBER                { $$ = $1; }
+    | ID                    {
+                                Var *v = findVar($1);
+                                if (v) {
+                                    $$ = v->value;
+                                } else {
+                                    printf("Erro: variavel %s nao declarada\n", $1);
+                                    exit(1); 
+                                }
+                            }
     ;
 
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático: %s\n", s);
-}
-
-int main(void) {
-    int result;
-    if (yyparse() == 0) {
-        /* Se quiser imprimir o valor, mude a gramática para produzir em 'main' */
-    }
-    return 0;
+    fprintf(stderr, "Erro: %s\n", s);
 }

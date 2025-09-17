@@ -29,8 +29,8 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 
 ## Pré-requisitos
 
-Necessário utilizar Linux, WSL ou macOS
-Necessário instalar as seguintes ferramentas do C: Bison e flex
+- Necessário utilizar Linux, WSL ou macOS
+- Necessário instalar as seguintes ferramentas do C: Bison e flex
 
 ## Referências
 

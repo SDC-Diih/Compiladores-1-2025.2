@@ -3,3 +3,4 @@ parser.tab.h
 compilador
 a.out
 lex.yy.c
+src/interp*

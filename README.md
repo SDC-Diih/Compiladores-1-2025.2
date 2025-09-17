@@ -5,10 +5,7 @@
 ## Objetivo: Fazer um Interpretador da Linguagem C
 ### Funcionalidades principais:
 - Declarações de Variáveis: Int, Float, Char, String
-- Estruturas COndicionais: IF, IFELSE, ESLSE
+- Estruturas de Controle: IF, IFELSE, ESLSE, FOR e WHILE
 - Operações Matemáticas: +, -, /, x
-
-## EXTRAS:
-- Estruturas de repetição: FOR, WHILE
-- Funções
-
+- Erros de Sintaxe
+- Funções ( Main() )

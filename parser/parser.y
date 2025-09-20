@@ -94,7 +94,14 @@ expr:
       expr '+' expr         { $$ = $1 + $3; }
     | expr '-' expr         { $$ = $1 - $3; }
     | expr '*' expr         { $$ = $1 * $3; }
-    | expr '/' expr         { $$ = $1 / $3; }
+    | expr '/' expr         {
+                                if ($3 == 0) {
+                                    printf("Erro: Divisão por Zero! \n");
+                                    exit(1); 
+                                } else {
+                                    $$ = $1 / $3;
+                                }
+                            }
     | NUMBER                { $$ = $1; }
     | ID                    {
                                 Var *v = findVar($1);

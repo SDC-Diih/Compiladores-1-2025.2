@@ -17,5 +17,5 @@
 ";"                     { return ';'; }
 [+\-*/]                 { return yytext[0]; }
 [ \t\n\r]+              ;
-.                       { printf("TESTE Erro lexico: caractere inválido '%s'\n", yytext); }
+.                       { printf("Erro lexico: caractere inválido '%s'\n", yytext); }
 %%

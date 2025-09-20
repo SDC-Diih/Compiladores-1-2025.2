@@ -38,6 +38,6 @@ o = n - m;
 
 print o;
 
-
+// É pra dar variavel não declarada
 o = s;
 print o;

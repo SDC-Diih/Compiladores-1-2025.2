@@ -9,7 +9,6 @@
 <COMMENT>"*/"           { BEGIN(INITIAL); }
 <COMMENT>.|\n           { /* Dentro do comentário, ignora tudo */ }
 "//".*                  { /* Comentário de linha única: ignora o resto da linha */ }
-[ \t\n]+                ; 
 "int"                   { return INT; }
 "print"                 { return PRINT; }
 [0-9]+                  { yylval.ival = atoi(yytext); return NUMBER; }
@@ -17,5 +16,6 @@
 "="                     { return '='; }
 ";"                     { return ';'; }
 [+\-*/]                 { return yytext[0]; }
-.                       { printf("Erro léxico: caractere inválido '%s'\n", yytext); }
+[ \t\n\r]+              ;
+.                       { printf("TESTE Erro lexico: caractere inválido '%s'\n", yytext); }
 %%

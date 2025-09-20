@@ -69,6 +69,16 @@ stmt:
                                     exit(1);
                                 }
                             }
+    | INT ID '=' expr ';'   {
+                                addVar($2);
+                                Var *v = findVar($2);
+                                if (v) {
+                                    v->value = $4; 
+                                } else {
+                                    printf("Erro: variavel %s nao declarada\n", $2);
+                                    exit(1);
+                                }
+                            }
     | PRINT ID ';'          {
                                 Var *v = findVar($2);
                                 if (v) {

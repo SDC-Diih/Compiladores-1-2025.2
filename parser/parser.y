@@ -9,7 +9,15 @@ typedef struct Var {
     struct Var *next;
 } Var;
 
+typedef struct Function {
+    char *name;
+    int returnValue;
+    struct Function *next;
+} Function;
+
 Var *symbolTable = NULL;
+Function *functionTable = NULL;
+Function *currentFunction = NULL;
 
 int yylex();
 void yyerror(const char *s);
@@ -35,6 +43,26 @@ void addVar(char *name) {
     v->next = symbolTable;
     symbolTable = v;
 }
+
+Function* findFunction(char *name) {
+    Function *f = functionTable;
+    while(f) {
+        if(strcmp(f->name, name) == 0) {
+            return f;
+        }
+        f = f->next;
+    }
+    return NULL;
+}
+
+Function* createFunction(char *name) {
+    Function *f = (Function*)malloc(sizeof(Function));
+    f->name = strdup(name);
+    f->returnValue = 0;
+    f->next = functionTable;
+    functionTable = f;
+    return f;
+}
 %}
 
 %union {
@@ -42,7 +70,7 @@ void addVar(char *name) {
     char *sval;
 }
 
-%token INT PRINT
+%token INT PRINT RETURN
 %token <ival> NUMBER
 %token <sval> ID
 
@@ -54,7 +82,21 @@ void addVar(char *name) {
 %%
 
 program:
-      program stmt
+      program function_def
+    | program stmt
+    | /* vazio */
+    ;
+
+function_def:
+      INT ID '(' ')' '{' { 
+                                currentFunction = createFunction($2);
+                            } stmt_list '}' {
+                                currentFunction = NULL;
+                            }
+    ;
+
+stmt_list:
+      stmt_list stmt
     | /* vazio */
     ;
 
@@ -88,6 +130,23 @@ stmt:
                                     exit(1);
                                 }
                             }
+    | RETURN expr ';'       {
+                                if (currentFunction) {
+                                    currentFunction->returnValue = $2;
+                                } else {
+                                    printf("Erro: return fora de funcao\n");
+                                    exit(1);
+                                }
+                            }
+    | ID '(' ')' ';'        {
+                                Function *f = findFunction($1);
+                                if (f) {
+                                    printf("%d\n", f->returnValue);
+                                } else {
+                                    printf("Erro: funcao %s nao declarada\n", $1);
+                                    exit(1);
+                                }
+                            }
     ;
 
 expr:
@@ -110,6 +169,15 @@ expr:
                                 } else {
                                     printf("Erro: variavel %s nao declarada\n", $1);
                                     exit(1); 
+                                }
+                            }
+    | ID '(' ')'            {
+                                Function *f = findFunction($1);
+                                if (f) {
+                                    $$ = f->returnValue;
+                                } else {
+                                    printf("Erro: funcao %s nao declarada\n", $1);
+                                    exit(1);
                                 }
                             }
     ;

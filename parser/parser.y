@@ -2,79 +2,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct Var {
-    char *name;
-    int value;
-    struct Var *next;
-} Var;
-
-typedef struct Function {
-    char *name;
-    int returnValue;
-    struct Function *next;
-} Function;
-
-Var *symbolTable = NULL;
-Function *functionTable = NULL;
-Function *currentFunction = NULL;
+#include "../ast/ast.h"
 
 int yylex();
 void yyerror(const char *s);
 
-Var* findVar(char *name) {
-    Var *v = symbolTable;
-    while(v) {
-        if(strcmp(v->name, name) == 0) {
-            return v;
-        }
-        v = v->next;
-    }
-    return NULL;
-}
-
-void addVar(char *name) {
-    if(findVar(name) != NULL) {
-        return; // já existe
-    }
-    Var *v = (Var*)malloc(sizeof(Var));
-    v->name = strdup(name);
-    v->value = 0;
-    v->next = symbolTable;
-    symbolTable = v;
-}
-
-Function* findFunction(char *name) {
-    Function *f = functionTable;
-    while(f) {
-        if(strcmp(f->name, name) == 0) {
-            return f;
-        }
-        f = f->next;
-    }
-    return NULL;
-}
-
-Function* createFunction(char *name) {
-    Function *f = (Function*)malloc(sizeof(Function));
-    f->name = strdup(name);
-    f->returnValue = 0;
-    f->next = functionTable;
-    functionTable = f;
-    return f;
-}
+ASTNode *ast_root = NULL; 
 %}
 
 %union {
     int ival;
     char *sval;
+    struct ASTNode* node;
 }
 
 %token INT PRINT RETURN
 %token <ival> NUMBER
 %token <sval> ID
 
-%type <ival> expr   /* expr vai carregar inteiros */
+%type <node> expr stmt stmt_list function_def program
 
 %left '+' '-'
 %left '*' '/'
@@ -82,108 +28,47 @@ Function* createFunction(char *name) {
 %%
 
 program:
-      program function_def
-    | program stmt
-    | /* vazio */
+      stmt_list { ast_root = $1; }
+    | /* vazio */ { ast_root = NULL;}
+    ;
+
+    /* vazio */ { $$ = NULL; }
+    | stmt_list stmt { $$ = create_stmt_list_node($1, $2); }
+    | stmt_list function_def { $$ = create_stmt_list_node($1, $2); }
     ;
 
 function_def:
-      INT ID '(' ')' '{' { 
-                                currentFunction = createFunction($2);
-                            } stmt_list '}' {
-                                currentFunction = NULL;
-                            }
-    ;
-
-stmt_list:
-      stmt_list stmt
-    | /* vazio */
+    INT ID '(' ')' '{' stmt_list '}' {
+        $$ = create_func_def_node($2, $6);
+    }
     ;
 
 stmt:
-      INT ID ';'            { addVar($2); }
-    | ID '=' expr ';'       {
-                                Var *v = findVar($1);
-                                if (v) {
-                                    v->value = $3; 
-                                } else {
-                                    printf("Erro: variavel %s nao declarada\n", $1);
-                                    exit(1);
-                                }
-                            }
+      INT ID ';'            { $$ = create_var_node($2); }
+    | ID '=' expr ';'       { $$ = create_assign_node(create_id_node($1), $3); }
     | INT ID '=' expr ';'   {
-                                addVar($2);
-                                Var *v = findVar($2);
-                                if (v) {
-                                    v->value = $4; 
-                                } else {
-                                    printf("Erro: variavel %s nao declarada\n", $2);
-                                    exit(1);
-                                }
+                                ASTNode* decl = create_var_node($2);
+                                ASTNode* assign = create_assign_mode(create_id_node(strdup($2)), $4);
+                                $$ = create_stmt_list_node(decl, assign);
                             }
-    | PRINT ID ';'          {
-                                Var *v = findVar($2);
-                                if (v) {
-                                    printf("%d\n", v->value);
-                                } else {
-                                    printf("Erro: variavel %s nao declarada\n", $2);
-                                    exit(1);
-                                }
-                            }
-    | RETURN expr ';'       {
-                                if (currentFunction) {
-                                    currentFunction->returnValue = $2;
-                                } else {
-                                    printf("Erro: return fora de funcao\n");
-                                    exit(1);
-                                }
-                            }
-    | ID '(' ')' ';'        {
-                                Function *f = findFunction($1);
-                                if (f) {
-                                    printf("%d\n", f->returnValue);
-                                } else {
-                                    printf("Erro: funcao %s nao declarada\n", $1);
-                                    exit(1);
-                                }
-                            }
+    | PRINT ID ';'          { $$ = create_print_node(create_id_node($2)); }
+    | RETURN expr ';'       { $$ = create_return_node($2); }
+    | ID '(' ')' ';'        { $$ = create_func_call_Node($1); }
     ;
 
 expr:
-      expr '+' expr         { $$ = $1 + $3; }
-    | expr '-' expr         { $$ = $1 - $3; }
-    | expr '*' expr         { $$ = $1 * $3; }
-    | expr '/' expr         {
-                                if ($3 == 0) {
-                                    printf("Erro: Divisão por Zero! \n");
-                                    exit(1); 
-                                } else {
-                                    $$ = $1 / $3;
-                                }
-                            }
-    | NUMBER                { $$ = $1; }
-    | ID                    {
-                                Var *v = findVar($1);
-                                if (v) {
-                                    $$ = v->value;
-                                } else {
-                                    printf("Erro: variavel %s nao declarada\n", $1);
-                                    exit(1); 
-                                }
-                            }
-    | ID '(' ')'            {
-                                Function *f = findFunction($1);
-                                if (f) {
-                                    $$ = f->returnValue;
-                                } else {
-                                    printf("Erro: funcao %s nao declarada\n", $1);
-                                    exit(1);
-                                }
-                            }
+      expr '+' expr         { $$ = create_bin_op_node('+', $1, $3); }
+    | expr '-' expr         { $$ = create_bin_op_node('-', $1, $3); }
+    | expr '*' expr         { $$ = create_bin_op_node('*', $1, $3); }
+    | expr '/' expr         { $$ = create_bin_op_node('/', $1, $3); }
+    | NUMBER                { $$ = create_number_node($1); }
+    | ID                    { $$ = create_id_node($1); }
+    | ID '(' ')'            { $$ = create_func_call_node($1); }
+    | '(' expr ')'          { $$ = $2; }
     ;
 
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro: %s\n", s);
+    fprintf(stderr, "Erro de Sintaxe: %s\n", s);
 }

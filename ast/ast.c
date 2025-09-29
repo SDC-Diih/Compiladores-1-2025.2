@@ -7,7 +7,7 @@ ASTNode* create_node(NodeType type) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
 
     if(!node) {
-        fprintf(stderr, "Failed to allocate memory for AST node \n");
+        fprintf(stderr, "Falha ao alocar memoria para o no \n");
         exit(EXIT_FAILURE);
     }
     
@@ -87,7 +87,7 @@ void print_ast(ASTNode* node, int level) {
 
     switch (node->type) {
         case NODE_NUMBER:
-            printf( "Number: %d\n", node->data.number);
+            printf( "Numero: %d\n", node->data.number);
             break;
         case NODE_ID:
             printf( "ID: %s\n", node->data.name);
@@ -96,7 +96,7 @@ void print_ast(ASTNode* node, int level) {
             printf( "Var: %s\n", node->data.name);
             break;
         case NODE_BIN_OP:
-            printf( "Operator: %c\n", node->data.binary_op.op);
+            printf( "Operador: %c\n", node->data.binary_op.op);
             print_ast(node->data.binary_op.left, level + 1);
             print_ast(node->data.binary_op.right, level + 1);
             break;
@@ -114,22 +114,22 @@ void print_ast(ASTNode* node, int level) {
             print_ast(node->data.statement.expression, level + 1);
             break;
         case NODE_STMT_LIST:
-            printf("Statement List: \n");
+            printf("Lista: \n");
             print_ast(node->data.stmt_list.statement, level +1);
             if (node->data.stmt_list.next) {
                 print_ast(node->data.stmt_list.next, level);
             }
             break;
         case NODE_FUNC_DEF:
-            printf( "Function Definition: %s\n", node->data.func_def.name);
-            printf( "Function Body: \n");
+            printf( "Funcao: %s\n", node->data.func_def.name);
+            printf( "Corpo da Funcao: \n");
             print_ast(node->data.func_def.body, level + 1);
             break;
         case NODE_FUNC_CALL:
-            printf( "Function Call : %s\n", node->data.func_call.name);
+            printf( "Chamada da Funcao: %s\n", node->data.func_call.name);
             break;
         default:
-            printf( "Unknown node type\n");
+            printf( "Tipo de no desconhecido \n");
             break;
     }
 }

@@ -5,6 +5,7 @@ EXEC = src/interp
 BISON_FILE = parser/parser.y
 FLEX_FILE  = lexer/lexer.l
 MAIN_FILE  = src/main.c
+AST_FILE = ast/ast.c
 
 # Arquivos que o Bison vai gerar em src/
 BISON_C   = src/parser.tab.c
@@ -19,7 +20,7 @@ FLEX  ?= flex
 CC    ?= gcc
 
 # Flags
-CFLAGS  += -Isrc
+CFLAGS  += -Isrc -Iast
 BISON_FLAGS = -d -o $(BISON_C)   # -d gera .h, -o muda saída .c
 FLEX_FLAGS  = -o $(FLEX_C)       # gera lex.yy.c em src/
 
@@ -37,8 +38,8 @@ endif
 all: $(EXEC)
 
 # Regra para gerar o executável
-$(EXEC): $(BISON_C) $(FLEX_C) $(MAIN_FILE)
-	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(MAIN_FILE) $(LDFLAGS)
+$(EXEC): $(BISON_C) $(FLEX_C) $(MAIN_FILE) $(AST_FILE)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Regra para rodar o Bison
 $(BISON_C) $(BISON_H): $(BISON_FILE)

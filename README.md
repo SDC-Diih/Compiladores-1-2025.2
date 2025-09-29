@@ -41,7 +41,8 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
   - ``flex -o src/lex.yy.c lexer/lexer.l``
   - ``cc -Isrc -o src/interp src/parser.tab.c src/lex.yy.c src/main.c -lfl ./src/interp``
 
-1. Pronto! Agora é só digitar algum comando em C para utilizar o interpretador.
+2. Pronto! Agora é só digitar algum comando em C para utilizar o interpretador.
+3. Para limpar os arquivos gerados digite: ``make clean``
 
 ## Referências
 

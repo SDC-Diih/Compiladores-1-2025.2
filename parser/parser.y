@@ -32,6 +32,7 @@ program:
     | /* vazio */ { ast_root = NULL;}
     ;
 
+stmt_list:
     /* vazio */ { $$ = NULL; }
     | stmt_list stmt { $$ = create_stmt_list_node($1, $2); }
     | stmt_list function_def { $$ = create_stmt_list_node($1, $2); }
@@ -48,12 +49,12 @@ stmt:
     | ID '=' expr ';'       { $$ = create_assign_node(create_id_node($1), $3); }
     | INT ID '=' expr ';'   {
                                 ASTNode* decl = create_var_node($2);
-                                ASTNode* assign = create_assign_mode(create_id_node(strdup($2)), $4);
+                                ASTNode* assign = create_assign_node(create_id_node(strdup($2)), $4);
                                 $$ = create_stmt_list_node(decl, assign);
                             }
     | PRINT ID ';'          { $$ = create_print_node(create_id_node($2)); }
     | RETURN expr ';'       { $$ = create_return_node($2); }
-    | ID '(' ')' ';'        { $$ = create_func_call_Node($1); }
+    | expr ';'              { $$ = $1; }
     ;
 
 expr:

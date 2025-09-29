@@ -93,7 +93,7 @@ void print_ast(ASTNode* node, int level) {
             printf( "ID: %s\n", node->data.name);
             break;
         case NODE_VAR:
-            printf( "Var: %s\n", node->data.name);
+            printf( "Variavel: %s\n", node->data.name);
             break;
         case NODE_BIN_OP:
             printf( "Operador: %c\n", node->data.binary_op.op);
@@ -101,7 +101,7 @@ void print_ast(ASTNode* node, int level) {
             print_ast(node->data.binary_op.right, level + 1);
             break;
         case NODE_ASSIGN:
-            printf( "Assignment: \n");
+            printf( "Atribuicao: \n");
             print_ast(node->data.assign.lvalue, level + 1);
             print_ast(node->data.assign.rvalue, level + 1);
             break;
@@ -114,7 +114,7 @@ void print_ast(ASTNode* node, int level) {
             print_ast(node->data.statement.expression, level + 1);
             break;
         case NODE_STMT_LIST:
-            printf("Lista: \n");
+            printf("Declaracao: \n");
             print_ast(node->data.stmt_list.statement, level +1);
             if (node->data.stmt_list.next) {
                 print_ast(node->data.stmt_list.next, level);

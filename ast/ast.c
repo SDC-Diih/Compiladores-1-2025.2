@@ -138,13 +138,19 @@ void free_ast(ASTNode* node) {
     if (!node) return;
 
     switch (node->type) {
+
+        // Nó sem memória alocada
         case NODE_NUMBER:
             break;
+
+        // Nós com strdup
         case NODE_ID:
-            break;
         case NODE_VAR:
-            free(node->data.name);
+        case NODE_FUNC_CALL:
+            free(node->data.name); 
             break;
+
+        // Nós com filhos
         case NODE_BIN_OP:
             free_ast(node->data.binary_op.left);
             free_ast(node->data.binary_op.right);
@@ -154,9 +160,8 @@ void free_ast(ASTNode* node) {
             free_ast(node->data.assign.rvalue);
             break;
         case NODE_PRINT:
-            break;
         case NODE_RETURN:
-            free_ast(node->data.statement.expression);
+            free_ast(node->data.statement.expression); // <-- MUDANÇA: free_ast() para a expressão filha
             break;
         case NODE_STMT_LIST:
             free_ast(node->data.stmt_list.statement);
@@ -166,9 +171,7 @@ void free_ast(ASTNode* node) {
             free(node->data.func_def.name);
             free_ast(node->data.func_def.body);
             break;
-        case NODE_FUNC_CALL:
-            free(node->data.func_call.name);
-            break;
+
         default:
             break;
     }

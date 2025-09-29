@@ -26,11 +26,22 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 - **Funções:**
   - Execução  de funções e execução a partir de uma função principal `main()`.
 
-
 ## Pré-requisitos
 
 - Necessário utilizar Linux, WSL ou macOS
 - Necessário instalar as seguintes ferramentas do C: Bison e flex
+
+## Como Executar
+
+1. No terminal, execute: ``make run``
+
+- Esse comando fará as instruções de comando necessárias para o Interpretador iniciar no seu terminal
+- As seguintes instruções serão executadas automaticamente:
+  - ``bison -d -o src/parser.tab.c parser/parser.y``
+  - ``flex -o src/lex.yy.c lexer/lexer.l``
+  - ``cc -Isrc -o src/interp src/parser.tab.c src/lex.yy.c src/main.c -lfl ./src/interp``
+
+1. Pronto! Agora é só digitar algum comando em C para utilizar o interpretador.
 
 ## Referências
 

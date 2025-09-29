@@ -6,9 +6,9 @@ typedef enum {
     // Expressões
     NODE_NUMBER,
     NODE_ID,
-    NODE_BIN_OP,
 
     // Comandos (Statements)
+    NODE_BIN_OP,
     NODE_VAR,
     NODE_ASSIGN,
     NODE_PRINT,

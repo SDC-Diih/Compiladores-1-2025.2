@@ -48,7 +48,7 @@ endif
 
 
 # Alvo padrão: se o usuário digitar apenas "make", ele fará a versão direta.
-all: $(EXEC_DIRECT)
+all: ast
 
 # Alvo para construir a versão AST
 ast: $(EXEC_AST)

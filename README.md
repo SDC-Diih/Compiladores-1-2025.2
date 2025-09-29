@@ -31,18 +31,79 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 - Necessário utilizar Linux, WSL ou macOS
 - Necessário instalar as seguintes ferramentas do C: Bison e flex
 
-## Como Executar
+## Como Compilar e Executar
 
-1. No terminal, execute: ``make run``
+Este projeto pode ser compilado em dois modos diferentes usando o `Makefile`:
 
-- Esse comando fará as instruções de comando necessárias para o Interpretador iniciar no seu terminal
-- As seguintes instruções serão executadas automaticamente:
-  - ``bison -d -o src/parser.tab.c parser/parser.y``
-  - ``flex -o src/lex.yy.c lexer/lexer.l``
-  - ``cc -Isrc -o src/interp src/parser.tab.c src/lex.yy.c src/main.c -lfl ./src/interp``
+1. **Modo AST**: Gera um executável que constrói e visualiza a Árvore de Sintaxe Abstrata do código de entrada.
+2. **Modo Direto**: Gera um executável que interpreta e executa o código de entrada em tempo real.
 
-2. Pronto! Agora é só digitar algum comando em C para utilizar o interpretador.
-3. Para limpar os arquivos gerados digite: ``make clean``
+### Compilando e Executando a Versão AST (Modo Padrão)
+
+Esta versão do interpretador não executa o código diretamente. Em vez disso, ela analisa a sintaxe e gera uma representação visual da Árvore de Sintaxe Abstrata (AST).
+
+**1. Para Compilar:**
+Execute o seguinte comando no terminal:
+
+```bash
+make ast
+```
+
+**2. Para Executar:**
+Após a compilação, use o comando:
+
+```bash
+./src/interp_ast
+```
+
+O programa irá aguardar a entrada do código. Após digitar as linhas de código, pressione Ctrl+D (em Linux/macOS) ou Ctrl+Z + Enter (em Windows) para finalizar a entrada. A AST correspondente ao código será impressa no console.
+
+### Compilando e Executando a Versão de Execução Direta
+
+Esta é a versão original do interpretador, que executa os comandos (como print) e realiza cálculos em tempo real, sem gerar uma AST visível.
+
+**1. Para Compilar:**
+Use o alvo direct no comando make:
+
+```bash
+make direct
+```
+
+**2. Para Executar:**
+Após a compilação, use o comando:
+
+```bash
+./src/interp_direct
+```
+
+O programa irá executar os comandos à medida que os lê. Por exemplo, um comando print irá exibir o valor da variável no console imediatamente.
+
+
+### Compilar e executar ao mesmo tempo
+
+Mais fácil pois necessita de somente um comando
+
+**Modo Direto**
+
+```bash
+make run-direct
+```
+
+**Modo AST**
+
+```bash
+make run-ast
+```
+
+### Limpando os Arquivos Gerados
+
+Para remover todos os arquivos compilados e gerados pelo Bison/Flex (incluindo ambos os executáveis interp_ast e interp_direct), use o comando de limpeza.
+
+```bash
+make clean
+```
+
+É uma boa prática rodar este comando antes de compilar uma nova versão ou simplesmente para limpar o diretório do projeto.
 
 ## Referências
 

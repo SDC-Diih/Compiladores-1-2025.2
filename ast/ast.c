@@ -83,6 +83,13 @@ ASTNode* create_func_call_node(char* name) {
 void print_ast(ASTNode* node, int level) {
     if (!node) return;
 
+    if (node->type == NODE_STMT_LIST) {
+        print_ast(node->data.stmt_list.statement, level);
+        print_ast(node->data.stmt_list.next, level);
+        return;
+
+    }
+            
     for (int i = 0; i < level; i++) printf("  ");
 
     switch (node->type) {
@@ -90,10 +97,10 @@ void print_ast(ASTNode* node, int level) {
             printf( "Numero: %d\n", node->data.number);
             break;
         case NODE_ID:
-            printf( "ID: %s\n", node->data.name);
+            printf( "Variavel: %s\n", node->data.name);
             break;
         case NODE_VAR:
-            printf( "Variavel: %s\n", node->data.name);
+            printf( "Declaracao: %s\n", node->data.name);
             break;
         case NODE_BIN_OP:
             printf( "Operador: %c\n", node->data.binary_op.op);
@@ -112,13 +119,6 @@ void print_ast(ASTNode* node, int level) {
         case NODE_RETURN:
             printf( "Return: \n");
             print_ast(node->data.statement.expression, level + 1);
-            break;
-        case NODE_STMT_LIST:
-            printf("Declaracao: \n");
-            print_ast(node->data.stmt_list.statement, level +1);
-            if (node->data.stmt_list.next) {
-                print_ast(node->data.stmt_list.next, level);
-            }
             break;
         case NODE_FUNC_DEF:
             printf( "Funcao: %s\n", node->data.func_def.name);

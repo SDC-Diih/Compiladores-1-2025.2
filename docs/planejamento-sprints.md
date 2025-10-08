@@ -17,7 +17,7 @@
 - [x] Escrever gramática inicial no Bison (.y).
 - [x] Escrever regras léxicas no Flex (.l).
 - [x] Descrever documento de sprints
-- [ ] Descrever documento de escopo do interpretador.
+- [x] Descrever documento de escopo do interpretador.
 
 ## Sprint 2 – Implementação Básica
 **Objetivos**
@@ -48,7 +48,7 @@
 
 **Tarefas**
 - [ ] Implementar nós da AST para operações, atribuições e `print`.
-- [ ] Validar erros básicos (variável não declarada, divisão por zero).
+- [x] Validar erros básicos (variável não declarada, divisão por zero).
 - [ ] Testar com exemplos pequenos.
 
 ## Sprint 4 – Interpretação da AST e Controle de Fluxo

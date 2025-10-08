@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-ASTNode* create_node(NodeType type) {
+ASTNode* createNode(NodeType type) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
 
     if(!node) {
@@ -15,77 +15,77 @@ ASTNode* create_node(NodeType type) {
     return node;
 };
 
-ASTNode* create_number_node(int value) {
-    ASTNode* node = create_node(NODE_NUMBER);
+ASTNode* createNumberNode(int value) {
+    ASTNode* node = createNode(NODE_NUMBER);
     node->data.number = value;
     return node;
 };
 
-ASTNode* create_id_node(char* name) {
-    ASTNode* node = create_node(NODE_ID);
+ASTNode* createIdNode(char* name) {
+    ASTNode* node = createNode(NODE_ID);
     node->data.name = strdup(name);
     return node;
 };
 
-ASTNode* create_var_node(char* name) {
-    ASTNode* node = create_node(NODE_VAR);
+ASTNode* createVarNode(char* name) {
+    ASTNode* node = createNode(NODE_VAR);
     node->data.name = strdup(name);
     return node;
 };
 
-ASTNode* create_bin_op_node(char op, ASTNode* left, ASTNode* right) {
-    ASTNode* node = create_node(NODE_BIN_OP);
-    node->data.binary_op.op = op;
-    node->data.binary_op.left = left;
-    node->data.binary_op.right = right;
+ASTNode* createBinOpNode(char op, ASTNode* left, ASTNode* right) {
+    ASTNode* node = createNode(NODE_BIN_OP);
+    node->data.binaryOp.op = op;
+    node->data.binaryOp.left = left;
+    node->data.binaryOp.right = right;
     return node;
 };
 
-ASTNode* create_assign_node(ASTNode* lvalue, ASTNode* rvalue) {
-    ASTNode* node = create_node(NODE_ASSIGN);
+ASTNode* createAssignNode(ASTNode* lvalue, ASTNode* rvalue) {
+    ASTNode* node = createNode(NODE_ASSIGN);
     node->data.assign.lvalue = lvalue;
     node->data.assign.rvalue = rvalue;
     return node;
 };
 
-ASTNode* create_print_node(ASTNode* expression) {
-    ASTNode* node = create_node(NODE_PRINT);
+ASTNode* createPrintNode(ASTNode* expression) {
+    ASTNode* node = createNode(NODE_PRINT);
     node->data.statement.expression = expression;
     return node;
 };
 
-ASTNode* create_return_node(ASTNode* expression) {
-    ASTNode* node = create_node(NODE_RETURN);
+ASTNode* createReturnNode(ASTNode* expression) {
+    ASTNode* node = createNode(NODE_RETURN);
     node->data.statement.expression = expression;
     return node;
 };
 
-ASTNode* create_stmt_list_node(ASTNode* statement, ASTNode* next) {
-    ASTNode* node = create_node(NODE_STMT_LIST);
-    node->data.stmt_list.statement = statement;
-    node->data.stmt_list.next = next;
+ASTNode* createStmtListNode(ASTNode* statement, ASTNode* next) {
+    ASTNode* node = createNode(NODE_STMT_LIST);
+    node->data.stmtList.statement = statement;
+    node->data.stmtList.next = next;
     return node;
 };
 
-ASTNode* create_func_def_node(char* name, ASTNode* body) {
-    ASTNode* node = create_node(NODE_FUNC_DEF);
-    node->data.func_def.name = strdup(name);
-    node->data.func_def.body = body;
+ASTNode* createFuncDefNode(char* name, ASTNode* body) {
+    ASTNode* node = createNode(NODE_FUNC_DEF);
+    node->data.funcDef.name = strdup(name);
+    node->data.funcDef.body = body;
     return node;
 };
 
-ASTNode* create_func_call_node(char* name) {
-    ASTNode* node = create_node(NODE_FUNC_CALL);
-    node->data.func_call.name = strdup(name);
+ASTNode* createFuncCallNode(char* name) {
+    ASTNode* node = createNode(NODE_FUNC_CALL);
+    node->data.funcCall.name = strdup(name);
     return node;
 };
 
-void print_ast(ASTNode* node, int level) {
+void printAst(ASTNode* node, int level) {
     if (!node) return;
 
     if (node->type == NODE_STMT_LIST) {
-        print_ast(node->data.stmt_list.statement, level);
-        print_ast(node->data.stmt_list.next, level);
+        printAst(node->data.stmtList.statement, level);
+        printAst(node->data.stmtList.next, level);
         return;
 
     }
@@ -103,30 +103,30 @@ void print_ast(ASTNode* node, int level) {
             printf( "Declaracao: %s\n", node->data.name);
             break;
         case NODE_BIN_OP:
-            printf( "Operador: %c\n", node->data.binary_op.op);
-            print_ast(node->data.binary_op.left, level + 1);
-            print_ast(node->data.binary_op.right, level + 1);
+            printf( "Operador: %c\n", node->data.binaryOp.op);
+            printAst(node->data.binaryOp.left, level + 1);
+            printAst(node->data.binaryOp.right, level + 1);
             break;
         case NODE_ASSIGN:
             printf( "Atribuicao: \n");
-            print_ast(node->data.assign.lvalue, level + 1);
-            print_ast(node->data.assign.rvalue, level + 1);
+            printAst(node->data.assign.lvalue, level + 1);
+            printAst(node->data.assign.rvalue, level + 1);
             break;
         case NODE_PRINT:
             printf( "Print: \n");
-            print_ast(node->data.statement.expression, level + 1);
+            printAst(node->data.statement.expression, level + 1);
             break;
         case NODE_RETURN:
             printf( "Return: \n");
-            print_ast(node->data.statement.expression, level + 1);
+            printAst(node->data.statement.expression, level + 1);
             break;
         case NODE_FUNC_DEF:
-            printf( "Funcao: %s\n", node->data.func_def.name);
+            printf( "Funcao: %s\n", node->data.funcDef.name);
             printf( "Corpo da Funcao: \n");
-            print_ast(node->data.func_def.body, level + 1);
+            printAst(node->data.funcDef.body, level + 1);
             break;
         case NODE_FUNC_CALL:
-            printf( "Chamada da Funcao: %s\n", node->data.func_call.name);
+            printf( "Chamada da Funcao: %s\n", node->data.funcCall.name);
             break;
         default:
             printf( "Tipo de no desconhecido \n");
@@ -134,7 +134,7 @@ void print_ast(ASTNode* node, int level) {
     }
 }
 
-void free_ast(ASTNode* node) {
+void freeAst(ASTNode* node) {
     if (!node) return;
 
     switch (node->type) {
@@ -152,24 +152,24 @@ void free_ast(ASTNode* node) {
 
         // Nós com filhos
         case NODE_BIN_OP:
-            free_ast(node->data.binary_op.left);
-            free_ast(node->data.binary_op.right);
+            freeAst(node->data.binaryOp.left);
+            freeAst(node->data.binaryOp.right);
             break;
         case NODE_ASSIGN:
-            free_ast(node->data.assign.lvalue);
-            free_ast(node->data.assign.rvalue);
+            freeAst(node->data.assign.lvalue);
+            freeAst(node->data.assign.rvalue);
             break;
         case NODE_PRINT:
         case NODE_RETURN:
-            free_ast(node->data.statement.expression); // <-- MUDANÇA: free_ast() para a expressão filha
+            freeAst(node->data.statement.expression); // <-- MUDANÇA: freeAst() para a expressão filha
             break;
         case NODE_STMT_LIST:
-            free_ast(node->data.stmt_list.statement);
-            free_ast(node->data.stmt_list.next);
+            freeAst(node->data.stmtList.statement);
+            freeAst(node->data.stmtList.next);
             break;
         case NODE_FUNC_DEF:
-            free(node->data.func_def.name);
-            free_ast(node->data.func_def.body);
+            free(node->data.funcDef.name);
+            freeAst(node->data.funcDef.body);
             break;
 
         default:

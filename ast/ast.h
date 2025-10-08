@@ -32,7 +32,7 @@ typedef struct ASTNode {
             char op; // operador: '+', '-', '*', '/'
             struct ASTNode* left;
             struct ASTNode* right;
-        } binary_op; // Para NODE_BIN_OP
+        } binaryOp; // Para NODE_BIN_OP
         
         struct {
             struct ASTNode* lvalue; // variável
@@ -46,16 +46,16 @@ typedef struct ASTNode {
         struct {
             struct ASTNode* statement;
             struct ASTNode* next;
-        } stmt_list; // Para NODE_STMT_LIST
+        } stmtList; // Para NODE_STMT_LIST
         
         struct {
             char* name;
             struct ASTNode* body;   // corpo da função
-        } func_def; // Para NODE_FUNC_DEF
+        } funcDef; // Para NODE_FUNC_DEF
 
         struct {
             char* name;
-        } func_call; // Para NODE_FUNC_CALL
+        } funcCall; // Para NODE_FUNC_CALL
 
     } data;
 
@@ -63,20 +63,20 @@ typedef struct ASTNode {
 
 // Funções para criar nós da AST
 
-ASTNode* create_number_node(int value);
-ASTNode* create_id_node(char* name);
-ASTNode* create_var_node(char* name);
+ASTNode* createNumberNode(int value);
+ASTNode* createIdNode(char* name);
+ASTNode* createVarNode(char* name);
 
-ASTNode* create_bin_op_node(char op, ASTNode* left, ASTNode* right);
-ASTNode* create_assign_node(ASTNode* lvalue, ASTNode* rvalue);
-ASTNode* create_print_node(ASTNode* expression);
-ASTNode* create_return_node(ASTNode* expression);
+ASTNode* createBinOpNode(char op, ASTNode* left, ASTNode* right);
+ASTNode* createAssignNode(ASTNode* lvalue, ASTNode* rvalue);
+ASTNode* createPrintNode(ASTNode* expression);
+ASTNode* createReturnNode(ASTNode* expression);
 
-ASTNode* create_stmt_list_node(ASTNode* statement, ASTNode* next);
-ASTNode* create_func_def_node(char* name, ASTNode* body);
-ASTNode* create_func_call_node(char* name);
+ASTNode* createStmtListNode(ASTNode* statement, ASTNode* next);
+ASTNode* createFuncDefNode(char* name, ASTNode* body);
+ASTNode* createFuncCallNode(char* name);
 
-void print_ast(ASTNode* node, int level);
-void free_ast(ASTNode* node);
+void printAst(ASTNode* node, int level);
+void freeAst(ASTNode* node);
 
 #endif 

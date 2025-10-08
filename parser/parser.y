@@ -7,7 +7,7 @@
 int yylex();
 void yyerror(const char *s);
 
-ASTNode *ast_root = NULL; 
+ASTNode *astRoot = NULL; 
 %}
 
 %union {
@@ -20,7 +20,7 @@ ASTNode *ast_root = NULL;
 %token <ival> NUMBER
 %token <sval> ID
 
-%type <node> expr stmt stmt_list function_def program
+%type <node> expr stmt stmtList functionDef program
 
 %left '+' '-'
 %left '*' '/'
@@ -28,43 +28,43 @@ ASTNode *ast_root = NULL;
 %%
 
 program:
-      stmt_list { ast_root = $1; }
-    | /* vazio */ { ast_root = NULL;}
+      stmtList { astRoot = $1; }
+    | /* vazio */ { astRoot = NULL;}
     ;
 
-stmt_list:
+stmtList:
     /* vazio */ { $$ = NULL; }
-    | stmt_list stmt { $$ = create_stmt_list_node($1, $2); }
-    | stmt_list function_def { $$ = create_stmt_list_node($1, $2); }
+    | stmtList stmt { $$ = createStmtListNode($1, $2); }
+    | stmtList functionDef { $$ = createStmtListNode($1, $2); }
     ;
 
-function_def:
-    INT ID '(' ')' '{' stmt_list '}' {
-        $$ = create_func_def_node($2, $6);
+functionDef:
+    INT ID '(' ')' '{' stmtList '}' {
+        $$ = createFuncDefNode($2, $6);
     }
     ;
 
 stmt:
-      INT ID ';'            { $$ = create_var_node($2); }
-    | ID '=' expr ';'       { $$ = create_assign_node(create_id_node($1), $3); }
+      INT ID ';'            { $$ = createVarNode($2); }
+    | ID '=' expr ';'       { $$ = createAssignNode(createIdNode($1), $3); }
     | INT ID '=' expr ';'   {
-                                ASTNode* decl = create_var_node($2);
-                                ASTNode* assign = create_assign_node(create_id_node(strdup($2)), $4);
-                                $$ = create_stmt_list_node(decl, assign);
+                                ASTNode* decl = createVarNode($2);
+                                ASTNode* assign = createAssignNode(createIdNode(strdup($2)), $4);
+                                $$ = createStmtListNode(decl, assign);
                             }
-    | PRINT ID ';'          { $$ = create_print_node(create_id_node($2)); }
-    | RETURN expr ';'       { $$ = create_return_node($2); }
+    | PRINT ID ';'          { $$ = createPrintNode(createIdNode($2)); }
+    | RETURN expr ';'       { $$ = createReturnNode($2); }
     | expr ';'              { $$ = $1; }
     ;
 
 expr:
-      expr '+' expr         { $$ = create_bin_op_node('+', $1, $3); }
-    | expr '-' expr         { $$ = create_bin_op_node('-', $1, $3); }
-    | expr '*' expr         { $$ = create_bin_op_node('*', $1, $3); }
-    | expr '/' expr         { $$ = create_bin_op_node('/', $1, $3); }
-    | NUMBER                { $$ = create_number_node($1); }
-    | ID                    { $$ = create_id_node($1); }
-    | ID '(' ')'            { $$ = create_func_call_node($1); }
+      expr '+' expr         { $$ = createBinOpNode('+', $1, $3); }
+    | expr '-' expr         { $$ = createBinOpNode('-', $1, $3); }
+    | expr '*' expr         { $$ = createBinOpNode('*', $1, $3); }
+    | expr '/' expr         { $$ = createBinOpNode('/', $1, $3); }
+    | NUMBER                { $$ = createNumberNode($1); }
+    | ID                    { $$ = createIdNode($1); }
+    | ID '(' ')'            { $$ = createFuncCallNode($1); }
     | '(' expr ')'          { $$ = $2; }
     ;
 

@@ -1,17 +1,13 @@
 # Executáveis a serem gerados
-EXEC_AST = src/interp_ast
-EXEC_DIRECT = src/interp_direct
+EXEC = src/interp
 
 # --- ARQUIVOS FONTE ---
 
 # Fontes da versão AST
-AST_PARSER = parser/parser.y
-AST_MAIN = src/main.c
+PARSER = parser/parser.y
+MAIN = src/main.c
 AST_C = ast/ast.c
-
-# Fontes da versão de Execução Direta
-DIRECT_PARSER = parser/parser_direct.y
-DIRECT_MAIN = src/main_direct.c
+INTERPRETER_C = interpreter/interpreter.c
 
 # Fonte do Lexer 
 FLEX_FILE = lexer/lexer.l
@@ -20,7 +16,6 @@ FLEX_FILE = lexer/lexer.l
 
 BISON_C = src/parser.tab.c
 BISON_H = src/parser.tab.h
-
 FLEX_C = src/lex.yy.c
 
 # Ferramentas (permitem override via ambiente, ex: BISON=/opt/local/bin/bison make)
@@ -30,8 +25,7 @@ CC    ?= gcc
 
 # Flags
 
-CFLAGS_AST = -Isrc -Iast
-CFLAGS_DIRECT = -Isrc
+CFLAGS = -Isrc -Iast
 BISON_FLAGS = -d -o $(BISON_C)
 FLEX_FLAGS  = -o $(FLEX_C)
 
@@ -44,46 +38,28 @@ else                               # Linux e outros
 endif
 
 # --- REGRAS DO MAKE ---
-.PHONY: all ast direct clean run-ast run-direct
+.PHONY: all clean run
 
 
-# Alvo padrão: se o usuário digitar apenas "make", ele fará a versão direta.
-all: ast
-
-# Alvo para construir a versão AST
-ast: $(EXEC_AST)
-
-# Alvo para construir a versão de Execução Direta
-direct: $(EXEC_DIRECT)
+# Alvo padrão: se o usuário digitar apenas "make"
+all: $(EXEC)
 
 # --- REGRAS DE CONSTRUÇÃO ---
 
 # Regra para construir o executável da AST
-$(EXEC_AST): $(AST_PARSER) $(FLEX_FILE) $(AST_MAIN) $(AST_C)
-	@echo "--- Compilando a versão AST ---"
-	$(BISON) $(BISON_FLAGS) $(AST_PARSER)
+$(EXEC): $(PARSER) $(FLEX_FILE) $(MAIN) $(AST_C) $(INTERPRETER_C)
+	@echo "--- Compilando o Interpretador ---"
+	$(BISON) $(BISON_FLAGS) $(PARSER)
 	$(FLEX) $(FLEX_FLAGS) $(FLEX_FILE)
-	$(CC) $(CFLAGS_AST) -o $@ $(BISON_C) $(FLEX_C) $(AST_MAIN) $(AST_C) $(LDFLAGS)
-	@echo ">>> Executável '$(EXEC_AST)' criado com sucesso."
-
-# Regra para construir o executável de Execução Direta
-$(EXEC_DIRECT): $(DIRECT_PARSER) $(FLEX_FILE) $(DIRECT_MAIN)
-	@echo "--- Compilando a versão de Execução Direta ---"
-	$(BISON) $(BISON_FLAGS) $(DIRECT_PARSER)
-	$(FLEX) $(FLEX_FLAGS) $(FLEX_FILE)
-	$(CC) $(CFLAGS_DIRECT) -o $@ $(BISON_C) $(FLEX_C) $(DIRECT_MAIN) $(LDFLAGS)
-	@echo ">>> Executável '$(EXEC_DIRECT)' criado com sucesso."
+	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(MAIN) $(AST_C) $(INTERPRETER_C) $(LDFLAGS)
+	@echo ">>> Executável '$(EXEC)' criado com sucesso."
 
 # --- REGRAS AUXILIARES ---
 
 # Regra para rodar a versão AST
-run-ast: ast
-	./$(EXEC_AST)
-
-# Regra para rodar a versão de Execução Direta
-run-direct: direct
-	./$(EXEC_DIRECT)
+run: all
+	./$(EXEC)
 
 # Limpeza para todos os arquivos
 clean:
-	rm -f $(EXEC_AST) $(EXEC_DIRECT) $(BISON_C) $(BISON_H) $(FLEX_C)
+	rm -f $(EXEC) $(BISON_C) $(BISON_H) $(FLEX_C)

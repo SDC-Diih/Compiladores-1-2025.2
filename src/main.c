@@ -13,15 +13,17 @@ int main() {
 
     yyparse();
 
-    evaluateNode(astRoot);
-
-    if (astRoot) {
-        printf(" -------------------------------------------------- \n");
+    if (!astRoot) {
+        printf(" Falha ao gerar AST! \n");
+        
+    } else {
         printf("Árvore Sintática Abstrata (AST): \n");
         printAst(astRoot, 0);
+        printf(" -------------------------------------------------- \n");
+
+        evaluateNode(astRoot);
+
         freeAst(astRoot);
-    } else {
-        printf(" Falha ao gerar AST! \n");
     }
     return 0;
 }

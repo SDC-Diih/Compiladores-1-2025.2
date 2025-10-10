@@ -15,6 +15,7 @@ typedef struct Var {
 typedef struct Function {
     char *name;
     int returnValue;
+    struct ASTNode *body;
     struct Function *next;
 } Function;
 
@@ -45,24 +46,29 @@ void addVar(char *name) {
 }
 
 Function* findFunction(char *name) {
-    Function *f = functionTable;
-    while(f) {
-        if(strcmp(f->name, name) == 0) {
-            return f;
+    Function *current = functionTable;
+    while(current) {
+        if(strcmp(current->name, name) == 0) {
+            return current;
         }
-        f = f->next;
+        current = current->next;
     }
     return NULL;
 }
 
-Function* createFunction(char *name) {
-    Function *f = (Function*)malloc(sizeof(Function));
-    f->name = strdup(name);
-    f->returnValue = 0;
-    f->next = functionTable;
-    functionTable = f;
-    return f;
+void addFunction(char* name, ASTNode* body) {
+    if (findFunction(name) != NULL) {
+        fprintf(stderr, "Erro Semantico: Funcao '%s' ja foi definida. \n", name);
+        exit(1);
+    }
+    Function* newFunc = (Function*)malloc(sizeof(Function));
+    newFunc->name = strdup(name);
+    newFunc->returnValue = 0;
+    newFunc->body = body;
+    newFunc->next = functionTable;
+    functionTable = newFunc;
 }
+
 
 int evaluateNode(ASTNode* node) {
     if (!node) {

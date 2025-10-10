@@ -134,6 +134,41 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
+        case NODE_FUNC_DEF: {
+            addFunction(node->data.funcDef.name, node->data.funcDef.body);
+            break;
+        }
+
+        case NODE_FUNC_CALL: {
+            Function* func = findFunction(node->data.funcCall.name);
+            if (!func) {
+                fprintf(stderr, "Erro Semantico: Funcao '%s' nao foi declarada. \n", node->data.funcCall.name);
+                exit(1);
+            }
+
+            Function* previousFunction = currentFunction;
+            currentFunction = func;
+
+            currentFunction->returnValue = 0;
+
+            evaluateNode(currentFunction->body);
+
+            currentFunction = previousFunction;
+
+            return func->returnValue;
+        }
+
+        case NODE_RETURN: {
+            if(!currentFunction) {
+                fprintf(stderr, "Erro Semantico: Comando 'return' fora de uma funcao. \n");
+                exit(1);
+
+            }
+
+            currentFunction->returnValue = evaluateNode(node->data.statement.expression);
+            break;
+        }
+
         default:
             fprintf(stderr, "Erro: No da AST do tipo %d nao pode ser avaliado. \n", node->type);
             break;

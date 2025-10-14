@@ -4,6 +4,12 @@
 
 ## Objetivo: Fazer um Interpretador da Linguagem C
 
+## Equipe:
+
+| Alexandre Beck | Arthur Matos | Diogo (Líder) | Pedro Miguel | Pedro Torreão |
+|:----:|:----:|:----:|:----:|:----:|
+| [@zzzBECK](https://github.com/zzzBECK) | [@Arthur-Matos](https://github.com/Arthur-Matos) | [@SDC-Diih](https://github.com/SDC-Diih) | [@pedroMADBR](https://github.com/pedroMADBR) | ? |
+
 ## Funcionalidades
 
 Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C, incluindo:
@@ -26,11 +32,59 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 - **Funções:**
   - Execução  de funções e execução a partir de uma função principal `main()`.
 
-
 ## Pré-requisitos
 
 - Necessário utilizar Linux, WSL ou macOS
 - Necessário instalar as seguintes ferramentas do C: Bison e flex
+
+## Como Compilar e Executar
+
+Este projeto pode ser compilado usando o `Makefile`:
+
+
+### Compilando e Executando
+
+
+**1. Para Compilar:**
+Execute o seguinte comando no terminal:
+
+```bash
+make
+```
+
+**2. Para Executar:**
+Após a compilação, use o comando:
+
+```bash
+./src/interp
+```
+
+O programa irá aguardar a entrada do código. Após digitar as linhas de código, pressione Ctrl+D (em Linux/macOS) ou Ctrl+Z + Enter (em Windows) para finalizar a entrada. A AST correspondente ao código será impressa no console e também seu resultado.
+
+**3. Para Executar Testes:**
+use o comando:
+
+```bash
+./src/interp < testeCases/teste[número do teste].c
+```
+
+### Compilar e executar ao mesmo tempo
+
+Mais fácil pois necessita de somente um comando
+
+```bash
+make run
+```
+
+### Limpando os Arquivos Gerados
+
+Para remover todos os arquivos compilados e gerados pelo Bison/Flex (incluindo o executável src/interp), use o comando de limpeza.
+
+```bash
+make clean
+```
+
+_É uma boa prática rodar este comando antes de compilar uma nova versão ou simplesmente para limpar o diretório do projeto._
 
 ## Referências
 

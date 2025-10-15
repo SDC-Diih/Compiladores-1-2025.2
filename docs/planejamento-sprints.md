@@ -40,24 +40,26 @@
 **Objetivos**
 - Criar a árvore sintática abstrata (AST) para representar expressões e comandos.
 - Implementar análise semântica básica (variáveis declaradas antes do uso).
+- Implementar execução percorrendo a AST.
 
 **Entregas**
 - Estrutura da AST funcionando.
+- Interpretador recursivo executando a AST.
 - Tabela de símbolos inicial para variáveis inteiras.
 - Parser gerando AST para expressões, atribuições e `print`.
 
 **Tarefas**
-- [ ] Implementar nós da AST para operações, atribuições e `print`.
+- [x] Implementar nós da AST para operações, atribuições e `print`.
+- [x] Implementar execução percorrendo a AST.
 - [x] Validar erros básicos (variável não declarada, divisão por zero).
-- [ ] Testar com exemplos pequenos.
+- [x] Testar com exemplos pequenos.
 
 ## Sprint 4 – Interpretação da AST e Controle de Fluxo
 **Objetivos**
-- Implementar execução percorrendo a AST.
+
 - Adicionar suporte a estruturas de controle (`if`, `while`).
 
 **Entregas**
-- Interpretador recursivo executando a AST.
 - Suporte a condicionais e laços.
 - Exemplos de teste com laços e decisões.
 
@@ -77,7 +79,7 @@
 - Pilha de contexto para escopo local.
 
 **Tarefas**
-- [ ] Implementar declaração e chamada de funções.
+- [ ] Implementar declaração e chamada de funções. 
 - [ ] Criar pilha de variáveis locais.
 - [ ] Adicionar otimização.
 - [ ] Testar funções simples.

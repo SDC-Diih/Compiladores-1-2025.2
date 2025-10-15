@@ -1,6 +1,6 @@
 # Decisões Técnicas - Semana 9
 
-##Foi finalizado e entregue:
+## Foi finalizado e entregue:
 
 - Interpretador com AST integrada, print da AST e interpretação com base na AST
 - Array foi criado

@@ -18,6 +18,10 @@ typedef enum {
     NODE_STMT_LIST,
     NODE_FUNC_CALL,
     NODE_FUNC_DEF,
+
+    // Array
+    NODE_ARRAY_DECL,
+    NODE_ARRAY_ACCESS,
 } NodeType;
 
 // Estrutura da Árvore Sintática Abstrata (AST)
@@ -57,9 +61,24 @@ typedef struct ASTNode {
             char* name;
         } funcCall; // Para NODE_FUNC_CALL
 
+        // Novo nó para declaração de array
+        struct{
+            char *name;
+            struct ASTNode *size; // O tamanho pode ser uma expressão, ex: arr[x+1]
+        }arrayDeclNode;
+
+        // Novo nó para acesso a um elemento do array
+        struct  {
+            struct ASTNode *arrayName; // Nó do tipo ID
+            struct ASTNode *index;    // A expressão do índice
+        }arrayAccessNode;
+
+        
+
     } data;
 
 } ASTNode;
+
 
 // Funções para criar nós da AST
 
@@ -78,5 +97,11 @@ ASTNode* createFuncCallNode(char* name);
 
 void printAst(ASTNode* node, int level);
 void freeAst(ASTNode* node);
+
+// Funções para Array
+ASTNode* createArrayDeclNode(char* name, ASTNode* size);
+ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index);
+
+const char* nodeTypeToString(NodeType type);
 
 #endif 

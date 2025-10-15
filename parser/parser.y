@@ -46,13 +46,19 @@ functionDef:
 
 stmt:
       INT ID ';'            { $$ = createVarNode($2); }
+    | INT ID '['expr']' ';' { $$ = createArrayDeclNode($2, $4); } 
     | ID '=' expr ';'       { $$ = createAssignNode(createIdNode($1), $3); }
+
+    | ID '['expr']' '=' expr ';' {
+                                ASTNode* target = createArrayAccessNode(createIdNode($1), $3);
+                                $$ = createAssignNode(target, $6);
+                            }
     | INT ID '=' expr ';'   {
                                 ASTNode* decl = createVarNode($2);
                                 ASTNode* assign = createAssignNode(createIdNode(strdup($2)), $4);
                                 $$ = createStmtListNode(decl, assign);
                             }
-    | PRINT ID ';'          { $$ = createPrintNode(createIdNode($2)); }
+    | PRINT expr ';'        { $$ = createPrintNode($2); }
     | RETURN expr ';'       { $$ = createReturnNode($2); }
     | expr ';'              { $$ = $1; }
     ;
@@ -64,6 +70,7 @@ expr:
     | expr '/' expr         { $$ = createBinOpNode('/', $1, $3); }
     | NUMBER                { $$ = createNumberNode($1); }
     | ID                    { $$ = createIdNode($1); }
+    | ID '[' expr ']'       { $$ = createArrayAccessNode(createIdNode($1), $3); }
     | ID '(' ')'            { $$ = createFuncCallNode($1); }
     | '(' expr ')'          { $$ = $2; }
     ;

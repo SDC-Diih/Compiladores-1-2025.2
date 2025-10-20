@@ -80,6 +80,44 @@ ASTNode* createFuncCallNode(char* name) {
     return node;
 };
 
+ASTNode* createArrayDeclNode(char* name, ASTNode* size) {
+    // 1. Aloca memória para a struct específica do nó de declaração de array.
+    ASTNode* node = createNode(NODE_ARRAY_DECL);
+
+    // 2. Verifica se a alocação de memória foi bem-sucedida.
+    if (!node) {
+        fprintf(stderr, "Erro: Falha ao alocar memória para o nó de declaração de array.\n");
+        exit(1); // Encerra o programa em caso de falha crítica.
+    }
+
+    // 3. Preenche os campos da struct.
+    node->type = NODE_ARRAY_DECL; // Define o tipo do nó.
+    node->data.arrayDeclNode.name = name;           // Armazena o nome do array.
+    node->data.arrayDeclNode.size = size;           // Armazena a sub-árvore que representa o tamanho.
+
+    // 4. Retorna o ponteiro para o nó, convertido para o tipo base ASTNode*.
+    return (ASTNode*) node;
+}
+
+ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index) {
+    // 1. Aloca memória para a struct específica do nó de acesso a array.
+    ASTNode* node = createNode(NODE_ARRAY_ACCESS);
+
+    // 2. Verifica se a alocação de memória foi bem-sucedida.
+    if (!node) {
+        fprintf(stderr, "Erro: Falha ao alocar memória para o nó de acesso a array.\n");
+        exit(1);
+    }
+
+    // 3. Preenche os campos da struct.
+    node->type = NODE_ARRAY_ACCESS; // Define o tipo do nó.
+    node->data.arrayAccessNode.arrayName = arrayName;    // Armazena o nó do nome do array.
+    node->data.arrayAccessNode.index = index;            // Armazena a sub-árvore que representa o índice.
+
+    // 4. Retorna o ponteiro para o nó, convertido para o tipo base ASTNode*.
+    return (ASTNode*) node;
+}
+
 void printAst(ASTNode* node, int level) {
     if (!node) return;
 
@@ -128,6 +166,15 @@ void printAst(ASTNode* node, int level) {
         case NODE_FUNC_CALL:
             printf( "Chamada da Funcao: %s\n", node->data.funcCall.name);
             break;
+        case NODE_ARRAY_DECL:
+            printf( "Declaração de Array: %s\n", node->data.arrayDeclNode.name);
+            printAst(node->data.arrayDeclNode.size, level + 1);
+            break;
+        case NODE_ARRAY_ACCESS:
+            printf( "Acesso do array: \n");
+            printAst(node->data.arrayAccessNode.arrayName, level + 1);
+            printAst(node->data.arrayAccessNode.index, level + 1);
+            break;
         default:
             printf( "Tipo de no desconhecido \n");
             break;
@@ -171,10 +218,37 @@ void freeAst(ASTNode* node) {
             free(node->data.funcDef.name);
             freeAst(node->data.funcDef.body);
             break;
+        case NODE_ARRAY_DECL:
+            free(node->data.arrayDeclNode.name);
+            freeAst(node->data.arrayDeclNode.size);
+            break;
+
+        case NODE_ARRAY_ACCESS:
+            freeAst(node->data.arrayAccessNode.arrayName);
+            freeAst(node->data.arrayAccessNode.index);
+            break;
 
         default:
             break;
     }
 
     free(node);
+}
+
+const char* nodeTypeToString(NodeType type) {
+    switch (type) {
+        case NODE_NUMBER: return "NODE_NUMBER";
+        case NODE_ID: return "NODE_ID";
+        case NODE_BIN_OP: return "NODE_BIN_OP";
+        case NODE_VAR: return "NODE_VAR";
+        case NODE_ASSIGN: return "NODE_ASSIGN";
+        case NODE_PRINT: return "NODE_PRINT";
+        case NODE_RETURN: return "NODE_RETURN";
+        case NODE_STMT_LIST: return "NODE_STMT_LIST";
+        case NODE_FUNC_CALL: return "NODE_FUNC_CALL";
+        case NODE_FUNC_DEF: return "NODE_FUNC_DEF";
+        case NODE_ARRAY_DECL: return "NODE_ARRAY_DECL";
+        case NODE_ARRAY_ACCESS: return "NODE_ARRAY_ACCESS";
+        default: return "UNKNOWN_NODE";
+    }
 }

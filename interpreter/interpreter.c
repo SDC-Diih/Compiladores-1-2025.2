@@ -14,10 +14,10 @@ typedef enum {
 // Estrutura para os dados de um array
 typedef struct {
     int size;
-    int *elements; // Ponteiro para os elementos alocados na memória
+    int *elements; // Ponteiro para os elementos alocados
 } ArrayData;
 
-// Ela pode ser um inteiro OU um array.
+// O simbolo pode ser um inteiro OU um array.
 typedef struct Symbol {
     char *name;
     SymbolType type; // O tipo nos diz qual parte da union usar
@@ -30,7 +30,6 @@ typedef struct Symbol {
     struct Symbol *next;
 } Symbol;
 
-// Vamos renomear as variáveis globais para refletir a nova estrutura
 Symbol *symbolTable = NULL; 
 
 typedef struct Function {
@@ -43,7 +42,6 @@ typedef struct Function {
 Function *functionTable = NULL;
 Function *currentFunction = NULL;
 
-// Substitua findVar por esta:
 Symbol* findSymbol(char *name) {
     Symbol *s = symbolTable;
     while(s) {
@@ -55,18 +53,15 @@ Symbol* findSymbol(char *name) {
     return NULL;
 }
 
-// Substitua addVar por esta:
 void addSymbolForInt(char *name) {
     if(findSymbol(name) != NULL) {
-        // Em C, você pode re-declarar uma variável em escopos diferentes,
-        // mas no nosso interpretador simples, vamos tratar como erro ou ignorar.
         fprintf(stderr, "Erro: Variavel '%s' ja declarada.\n", name);
         exit(1);
     }
     Symbol *s = (Symbol*)malloc(sizeof(Symbol));
     s->name = strdup(name);
-    s->type = TYPE_INT;     // Marcamos como inteiro
-    s->data.intValue = 0;   // Inicializamos com 0
+    s->type = TYPE_INT;     
+    s->data.intValue = 0;   // Inicializamos o valor como 0
     s->next = symbolTable;
     symbolTable = s;
 }
@@ -95,9 +90,6 @@ void addFunction(char* name, ASTNode* body) {
     functionTable = newFunc;
 }
 
-
-// Função evaluateNode COMPLETA E ATUALIZADA
-
 int evaluateNode(ASTNode* node) {
     if (!node) {
         return 0;
@@ -107,7 +99,7 @@ int evaluateNode(ASTNode* node) {
         case NODE_NUMBER:
             return node->data.number;
         
-        case NODE_ID: { // [MODIFICADO]
+        case NODE_ID: {
             Symbol* sym = findSymbol(node->data.name);
             if (!sym) {
                 printf("Erro de semantica: Variavel '%s' nao declarada \n", node->data.name);
@@ -122,7 +114,6 @@ int evaluateNode(ASTNode* node) {
             return sym->data.intValue;
         }
 
-        // [NOVO] Lógica para ler um valor de um array, ex: y = array[5];
         case NODE_ARRAY_ACCESS: {
             // 1. Encontra o array na tabela de símbolos
             Symbol* sym = findSymbol(node->data.arrayAccessNode.arrayName->data.name);
@@ -149,7 +140,6 @@ int evaluateNode(ASTNode* node) {
         }
 
         case NODE_BIN_OP: {
-            // ... (sem mudanças aqui, esta parte está perfeita)
             int leftValue = evaluateNode(node->data.binaryOp.left);
             int rightValue = evaluateNode(node->data.binaryOp.right);
             switch (node->data.binaryOp.op) {
@@ -166,11 +156,10 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
-        case NODE_VAR:  // [MODIFICADO]
+        case NODE_VAR: 
             addSymbolForInt(node->data.name); // Chama a nova função
             break;
 
-        // [NOVO] Lógica para declarar um array
         case NODE_ARRAY_DECL: {
             if (findSymbol(node->data.arrayDeclNode.name) != NULL) {
                 printf("Erro: Variavel '%s' ja foi declarada.\n", node->data.arrayDeclNode.name);
@@ -197,7 +186,7 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
-        case NODE_ASSIGN: { // [MODIFICADO] - Esta é a mudança mais complexa
+        case NODE_ASSIGN: {
             ASTNode* lvalue = node->data.assign.lvalue;
             int rvalue = evaluateNode(node->data.assign.rvalue);
 
@@ -242,7 +231,6 @@ int evaluateNode(ASTNode* node) {
         }
 
         case NODE_STMT_LIST: {
-            // ... (sem mudanças)
             evaluateNode(node->data.stmtList.statement);
             if (node->data.stmtList.next) {
                 evaluateNode(node->data.stmtList.next);
@@ -250,7 +238,6 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
-        // ... Todos os seus cases de função (NODE_FUNC_DEF, etc.) permanecem iguais ...
         case NODE_FUNC_DEF: {
             addFunction(node->data.funcDef.name, node->data.funcDef.body);
             break;

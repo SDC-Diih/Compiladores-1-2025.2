@@ -8,7 +8,7 @@
 
 | Alexandre Beck | Arthur Matos | Diogo (Líder) | Pedro Miguel | Pedro Torreão |
 |:----:|:----:|:----:|:----:|:----:|
-| [@zzzBECK](https://github.com/zzzBECK) | [@Arthur-Matos](https://github.com/Arthur-Matos) | [@SDC-Diih](https://github.com/SDC-Diih) | [@pedroMADBR](https://github.com/pedroMADBR) | ? |
+| [@zzzBECK](https://github.com/zzzBECK) | [@Arthur-Matos](https://github.com/Arthur-Matos) | [@SDC-Diih](https://github.com/SDC-Diih) | [@pedroMADBR](https://github.com/pedroMADBR) | [@PedroTorreao21](https://github.com/PedroTorreao21) |
 
 ## Funcionalidades
 

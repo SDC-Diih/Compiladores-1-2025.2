@@ -2,9 +2,9 @@
 #define AST_H
 
 typedef enum {
-
     // Expressões
     NODE_NUMBER,
+    NODE_FLOAT,      // Novo tipo para literais float
     NODE_ID,
 
     // Comandos (Statements)
@@ -24,13 +24,34 @@ typedef enum {
     NODE_ARRAY_ACCESS,
 } NodeType;
 
+// Enum para tipos de dados
+typedef enum {
+    DATA_TYPE_INT,
+    DATA_TYPE_FLOAT
+} DataType;
+
+// Estrutura para representar valores (int ou float)
+typedef struct {
+    DataType type;
+    union {
+        int intValue;
+        float floatValue;
+    } value;
+} Value;
+
 // Estrutura da Árvore Sintática Abstrata (AST)
 typedef struct ASTNode {
     NodeType type;
 
     union {
-        int number; // Para NODE_NUMBER
-        char* name; // PARA NODE_ID e NODE_VAR
+        int number;      // Para NODE_NUMBER (mantido por compatibilidade)
+        float floatNum;  // Para NODE_FLOAT
+        char* name;      // PARA NODE_ID e NODE_VAR
+
+        struct {
+            DataType varType;  // Tipo da variável (int ou float)
+            char* name;
+        } varDecl;  // Para NODE_VAR com tipo
 
         struct {
             char op; // operador: '+', '-', '*', '/'
@@ -73,18 +94,16 @@ typedef struct ASTNode {
             struct ASTNode *index;    // A expressão do índice
         }arrayAccessNode;
 
-        
-
     } data;
 
 } ASTNode;
 
-
 // Funções para criar nós da AST
-
 ASTNode* createNumberNode(int value);
+ASTNode* createFloatNode(float value);  
 ASTNode* createIdNode(char* name);
 ASTNode* createVarNode(char* name);
+ASTNode* createVarNodeWithType(DataType type, char* name);  
 
 ASTNode* createBinOpNode(char op, ASTNode* left, ASTNode* right);
 ASTNode* createAssignNode(ASTNode* lvalue, ASTNode* rvalue);
@@ -104,4 +123,4 @@ ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index);
 
 const char* nodeTypeToString(NodeType type);
 
-#endif 
+#endif

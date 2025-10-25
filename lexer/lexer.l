@@ -10,8 +10,10 @@
 <COMMENT>.|\n           { /* Dentro do comentário, ignora tudo */ }
 "//".*                  { /* Comentário de linha única: ignora o resto da linha */ }
 "int"                   { return INT; }
+"float"                 { return FLOAT; }
 "print"                 { return PRINT; }
 "return"                { return RETURN; }
+[0-9]+\.[0-9]+          { yylval.fval = atof(yytext); return FLOAT_NUM; }
 [0-9]+                  { yylval.ival = atoi(yytext); return NUMBER; }
 [a-zA-Z_][a-zA-Z0-9_]*  { yylval.sval = strdup(yytext); return ID; }
 "="                     { return '='; }

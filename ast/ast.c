@@ -5,33 +5,44 @@
 
 ASTNode* createNode(NodeType type) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
-
     if(!node) {
         fprintf(stderr, "Falha ao alocar memoria para o no \n");
         exit(EXIT_FAILURE);
     }
-    
     node->type = type;
     return node;
-};
+}
 
 ASTNode* createNumberNode(int value) {
     ASTNode* node = createNode(NODE_NUMBER);
     node->data.number = value;
     return node;
-};
+}
+
+ASTNode* createFloatNode(float value) {
+    ASTNode* node = createNode(NODE_FLOAT);
+    node->data.floatNum = value;
+    return node;
+}
 
 ASTNode* createIdNode(char* name) {
     ASTNode* node = createNode(NODE_ID);
     node->data.name = strdup(name);
     return node;
-};
+}
 
 ASTNode* createVarNode(char* name) {
     ASTNode* node = createNode(NODE_VAR);
     node->data.name = strdup(name);
     return node;
-};
+}
+
+ASTNode* createVarNodeWithType(DataType type, char* name) {
+    ASTNode* node = createNode(NODE_VAR);
+    node->data.varDecl.varType = type;
+    node->data.varDecl.name = strdup(name);
+    return node;
+}
 
 ASTNode* createBinOpNode(char op, ASTNode* left, ASTNode* right) {
     ASTNode* node = createNode(NODE_BIN_OP);
@@ -39,82 +50,68 @@ ASTNode* createBinOpNode(char op, ASTNode* left, ASTNode* right) {
     node->data.binaryOp.left = left;
     node->data.binaryOp.right = right;
     return node;
-};
+}
 
 ASTNode* createAssignNode(ASTNode* lvalue, ASTNode* rvalue) {
     ASTNode* node = createNode(NODE_ASSIGN);
     node->data.assign.lvalue = lvalue;
     node->data.assign.rvalue = rvalue;
     return node;
-};
+}
 
 ASTNode* createPrintNode(ASTNode* expression) {
     ASTNode* node = createNode(NODE_PRINT);
     node->data.statement.expression = expression;
     return node;
-};
+}
 
 ASTNode* createReturnNode(ASTNode* expression) {
     ASTNode* node = createNode(NODE_RETURN);
     node->data.statement.expression = expression;
     return node;
-};
+}
 
 ASTNode* createStmtListNode(ASTNode* statement, ASTNode* next) {
     ASTNode* node = createNode(NODE_STMT_LIST);
     node->data.stmtList.statement = statement;
     node->data.stmtList.next = next;
     return node;
-};
+}
 
 ASTNode* createFuncDefNode(char* name, ASTNode* body) {
     ASTNode* node = createNode(NODE_FUNC_DEF);
     node->data.funcDef.name = strdup(name);
     node->data.funcDef.body = body;
     return node;
-};
+}
 
 ASTNode* createFuncCallNode(char* name) {
     ASTNode* node = createNode(NODE_FUNC_CALL);
     node->data.funcCall.name = strdup(name);
     return node;
-};
+}
 
 ASTNode* createArrayDeclNode(char* name, ASTNode* size) {
-    // 1. Aloca memória para a struct específica do nó de declaração de array.
     ASTNode* node = createNode(NODE_ARRAY_DECL);
-
-    // 2. Verifica se a alocação de memória foi bem-sucedida.
     if (!node) {
         fprintf(stderr, "Erro: Falha ao alocar memória para o nó de declaração de array.\n");
-        exit(1); // Encerra o programa em caso de falha crítica.
+        exit(1);
     }
-
-    // 3. Preenche os campos da struct.
-    node->type = NODE_ARRAY_DECL; // Define o tipo do nó.
-    node->data.arrayDeclNode.name = name;           // Armazena o nome do array.
-    node->data.arrayDeclNode.size = size;           // Armazena a sub-árvore que representa o tamanho.
-
-    // 4. Retorna o ponteiro para o nó, convertido para o tipo base ASTNode*.
+    node->type = NODE_ARRAY_DECL;
+    node->data.arrayDeclNode.name = name;
+    node->data.arrayDeclNode.size = size;
     return (ASTNode*) node;
 }
 
 ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index) {
-    // 1. Aloca memória para a struct específica do nó de acesso a array.
     ASTNode* node = createNode(NODE_ARRAY_ACCESS);
-
-    // 2. Verifica se a alocação de memória foi bem-sucedida.
     if (!node) {
         fprintf(stderr, "Erro: Falha ao alocar memória para o nó de acesso a array.\n");
         exit(1);
     }
-
-    // 3. Preenche os campos da struct.
-    node->type = NODE_ARRAY_ACCESS; // Define o tipo do nó.
-    node->data.arrayAccessNode.arrayName = arrayName;    // Armazena o nó do nome do array.
-    node->data.arrayAccessNode.index = index;            // Armazena a sub-árvore que representa o índice.
-
-    // 4. Retorna o ponteiro para o nó, convertido para o tipo base ASTNode*.
+    node->type = NODE_ARRAY_ACCESS;
+    node->data.arrayAccessNode.arrayName = arrayName;
+    node->data.arrayAccessNode.index = index;
     return (ASTNode*) node;
 }
 
@@ -125,58 +122,60 @@ void printAst(ASTNode* node, int level) {
         printAst(node->data.stmtList.statement, level);
         printAst(node->data.stmtList.next, level);
         return;
-
     }
             
     for (int i = 0; i < level; i++) printf("  ");
 
     switch (node->type) {
         case NODE_NUMBER:
-            printf( "Numero: %d\n", node->data.number);
+            printf("Numero (int): %d\n", node->data.number);
+            break;
+        case NODE_FLOAT:
+            printf("Numero (float): %f\n", node->data.floatNum);
             break;
         case NODE_ID:
-            printf( "Variavel: %s\n", node->data.name);
+            printf("Variavel: %s\n", node->data.name);
             break;
         case NODE_VAR:
-            printf( "Declaracao: %s\n", node->data.name);
+            printf("Declaracao: %s\n", node->data.varDecl.name);
             break;
         case NODE_BIN_OP:
-            printf( "Operador: %c\n", node->data.binaryOp.op);
+            printf("Operador: %c\n", node->data.binaryOp.op);
             printAst(node->data.binaryOp.left, level + 1);
             printAst(node->data.binaryOp.right, level + 1);
             break;
         case NODE_ASSIGN:
-            printf( "Atribuicao: \n");
+            printf("Atribuicao: \n");
             printAst(node->data.assign.lvalue, level + 1);
             printAst(node->data.assign.rvalue, level + 1);
             break;
         case NODE_PRINT:
-            printf( "Print: \n");
+            printf("Print: \n");
             printAst(node->data.statement.expression, level + 1);
             break;
         case NODE_RETURN:
-            printf( "Return: \n");
+            printf("Return: \n");
             printAst(node->data.statement.expression, level + 1);
             break;
         case NODE_FUNC_DEF:
-            printf( "Funcao: %s\n", node->data.funcDef.name);
-            printf( "Corpo da Funcao: \n");
+            printf("Funcao: %s\n", node->data.funcDef.name);
+            printf("Corpo da Funcao: \n");
             printAst(node->data.funcDef.body, level + 1);
             break;
         case NODE_FUNC_CALL:
-            printf( "Chamada da Funcao: %s\n", node->data.funcCall.name);
+            printf("Chamada da Funcao: %s\n", node->data.funcCall.name);
             break;
         case NODE_ARRAY_DECL:
-            printf( "Declaração de Array: %s\n", node->data.arrayDeclNode.name);
+            printf("Declaração de Array: %s\n", node->data.arrayDeclNode.name);
             printAst(node->data.arrayDeclNode.size, level + 1);
             break;
         case NODE_ARRAY_ACCESS:
-            printf( "Acesso do array: \n");
+            printf("Acesso do array: \n");
             printAst(node->data.arrayAccessNode.arrayName, level + 1);
             printAst(node->data.arrayAccessNode.index, level + 1);
             break;
         default:
-            printf( "Tipo de no desconhecido \n");
+            printf("Tipo de no desconhecido \n");
             break;
     }
 }
@@ -185,19 +184,19 @@ void freeAst(ASTNode* node) {
     if (!node) return;
 
     switch (node->type) {
-
-        // Nó sem memória alocada
         case NODE_NUMBER:
+        case NODE_FLOAT:
             break;
 
-        // Nós com strdup
         case NODE_ID:
-        case NODE_VAR:
         case NODE_FUNC_CALL:
             free(node->data.name); 
             break;
 
-        // Nós com filhos
+        case NODE_VAR:
+            free(node->data.varDecl.name);
+            break;
+
         case NODE_BIN_OP:
             freeAst(node->data.binaryOp.left);
             freeAst(node->data.binaryOp.right);
@@ -208,7 +207,7 @@ void freeAst(ASTNode* node) {
             break;
         case NODE_PRINT:
         case NODE_RETURN:
-            freeAst(node->data.statement.expression); // <-- MUDANÇA: freeAst() para a expressão filha
+            freeAst(node->data.statement.expression);
             break;
         case NODE_STMT_LIST:
             freeAst(node->data.stmtList.statement);
@@ -222,12 +221,10 @@ void freeAst(ASTNode* node) {
             free(node->data.arrayDeclNode.name);
             freeAst(node->data.arrayDeclNode.size);
             break;
-
         case NODE_ARRAY_ACCESS:
             freeAst(node->data.arrayAccessNode.arrayName);
             freeAst(node->data.arrayAccessNode.index);
             break;
-
         default:
             break;
     }
@@ -238,6 +235,7 @@ void freeAst(ASTNode* node) {
 const char* nodeTypeToString(NodeType type) {
     switch (type) {
         case NODE_NUMBER: return "NODE_NUMBER";
+        case NODE_FLOAT: return "NODE_FLOAT";
         case NODE_ID: return "NODE_ID";
         case NODE_BIN_OP: return "NODE_BIN_OP";
         case NODE_VAR: return "NODE_VAR";

@@ -1,3 +1,7 @@
+%code requires {
+    #include "../ast/ast.h"
+}
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,15 +16,19 @@ ASTNode *astRoot = NULL;
 
 %union {
     int ival;
+    float fval;
     char *sval;
     struct ASTNode* node;
+    int dataType;  // Mudado de DataType para int
 }
 
-%token INT PRINT RETURN
+%token INT FLOAT PRINT RETURN
 %token <ival> NUMBER
+%token <fval> FLOAT_NUM
 %token <sval> ID
 
 %type <node> expr stmt stmtList functionDef program
+%type <dataType> type
 
 %left '+' '-'
 %left '*' '/'
@@ -32,29 +40,45 @@ program:
     | /* vazio */ { astRoot = NULL;}
     ;
 
+type:
+      INT   { $$ = DATA_TYPE_INT; }
+    | FLOAT { $$ = DATA_TYPE_FLOAT; }
+    ;
+
 stmtList:
-    /* vazio */ { $$ = NULL; }
-    | stmtList stmt { $$ = createStmtListNode($1, $2); }
-    | stmtList functionDef { $$ = createStmtListNode($1, $2); }
+      /* vazio */ { $$ = NULL; }
+    | stmtList stmt { 
+        if ($1 == NULL) {
+            $$ = $2;
+        } else {
+            $$ = createStmtListNode($1, $2); 
+        }
+      }
+    | stmtList functionDef { 
+        if ($1 == NULL) {
+            $$ = $2;
+        } else {
+            $$ = createStmtListNode($1, $2); 
+        }
+      }
     ;
 
 functionDef:
-    INT ID '(' ')' '{' stmtList '}' {
+    type ID '(' ')' '{' stmtList '}' {
         $$ = createFuncDefNode($2, $6);
     }
     ;
 
 stmt:
-      INT ID ';'            { $$ = createVarNode($2); }
-    | INT ID '['expr']' ';' { $$ = createArrayDeclNode($2, $4); } 
+      type ID ';'            { $$ = createVarNodeWithType((DataType)$1, $2); }
+    | type ID '['expr']' ';' { $$ = createArrayDeclNode($2, $4); } 
     | ID '=' expr ';'       { $$ = createAssignNode(createIdNode($1), $3); }
-
     | ID '['expr']' '=' expr ';' {
                                 ASTNode* target = createArrayAccessNode(createIdNode($1), $3);
                                 $$ = createAssignNode(target, $6);
                             }
-    | INT ID '=' expr ';'   {
-                                ASTNode* decl = createVarNode($2);
+    | type ID '=' expr ';'   {
+                                ASTNode* decl = createVarNodeWithType((DataType)$1, $2);
                                 ASTNode* assign = createAssignNode(createIdNode(strdup($2)), $4);
                                 $$ = createStmtListNode(decl, assign);
                             }
@@ -69,6 +93,7 @@ expr:
     | expr '*' expr         { $$ = createBinOpNode('*', $1, $3); }
     | expr '/' expr         { $$ = createBinOpNode('/', $1, $3); }
     | NUMBER                { $$ = createNumberNode($1); }
+    | FLOAT_NUM             { $$ = createFloatNode($1); }
     | ID                    { $$ = createIdNode($1); }
     | ID '[' expr ']'       { $$ = createArrayAccessNode(createIdNode($1), $3); }
     | ID '(' ')'            { $$ = createFuncCallNode($1); }

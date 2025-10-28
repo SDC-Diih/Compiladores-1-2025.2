@@ -11,13 +11,11 @@ typedef enum {
     TYPE_ARRAY
 } SymbolType;
 
-// Estrutura para os dados de um array
 typedef struct {
     int size;
     int *elements;
 } ArrayData;
 
-// O símbolo pode ser um inteiro, float OU um array
 typedef struct Symbol {
     char *name;
     SymbolType type;
@@ -35,7 +33,7 @@ Symbol *symbolTable = NULL;
 
 typedef struct Function {
     char *name;
-    Value returnValue;  // Mudado para Value
+    Value returnValue;
     struct ASTNode *body;
     struct Function *next;
 } Function;
@@ -103,6 +101,32 @@ void addFunction(char* name, ASTNode* body) {
     newFunc->body = body;
     newFunc->next = functionTable;
     functionTable = newFunc;
+}
+
+// Declaração forward para evitar erro de compilação
+Value evaluateNodeValue(ASTNode* node);
+
+int evaluateCondition(ASTNode* node) {
+    if (!node) return 0;
+
+    if (node->type == NODE_RELATIONAL_OP) {
+        Value leftValue = evaluateNodeValue(node->data.relationalOp.left);
+        Value rightValue = evaluateNodeValue(node->data.relationalOp.right);
+        
+        float left = (leftValue.type == DATA_TYPE_FLOAT) ? leftValue.value.floatValue : (float)leftValue.value.intValue;
+        float right = (rightValue.type == DATA_TYPE_FLOAT) ? rightValue.value.floatValue : (float)rightValue.value.intValue;
+        
+        char* op = node->data.relationalOp.op;
+        
+        if (strcmp(op, "==") == 0) return left == right;
+        if (strcmp(op, "!=") == 0) return left != right;
+        if (strcmp(op, "<") == 0) return left < right;
+        if (strcmp(op, ">") == 0) return left > right;
+        if (strcmp(op, "<=") == 0) return left <= right;
+        if (strcmp(op, ">=") == 0) return left >= right;
+    }
+    
+    return 0;
 }
 
 Value evaluateNodeValue(ASTNode* node) {
@@ -173,7 +197,6 @@ Value evaluateNodeValue(ASTNode* node) {
             Value leftValue = evaluateNodeValue(node->data.binaryOp.left);
             Value rightValue = evaluateNodeValue(node->data.binaryOp.right);
             
-            // Promoção de tipo: se qualquer operando é float, resultado é float
             if (leftValue.type == DATA_TYPE_FLOAT || rightValue.type == DATA_TYPE_FLOAT) {
                 result.type = DATA_TYPE_FLOAT;
                 float left = (leftValue.type == DATA_TYPE_FLOAT) ? leftValue.value.floatValue : (float)leftValue.value.intValue;
@@ -321,6 +344,17 @@ int evaluateNode(ASTNode* node) {
                 printf("%d\n", valueToPrint.value.intValue);
             } else {
                 printf("%f\n", valueToPrint.value.floatValue);
+            }
+            break;
+        }
+
+        case NODE_IF: {
+            int conditionResult = evaluateCondition(node->data.ifNode.condition);
+            
+            if (conditionResult) {
+                evaluateNode(node->data.ifNode.thenBranch);
+            } else if (node->data.ifNode.elseBranch) {
+                evaluateNode(node->data.ifNode.elseBranch);
             }
             break;
         }

@@ -4,7 +4,7 @@
 typedef enum {
     // Expressões
     NODE_NUMBER,
-    NODE_FLOAT,      // Novo tipo para literais float
+    NODE_FLOAT,
     NODE_ID,
 
     // Comandos (Statements)
@@ -22,6 +22,10 @@ typedef enum {
     // Array
     NODE_ARRAY_DECL,
     NODE_ARRAY_ACCESS,
+
+    // Condicionais
+    NODE_IF,
+    NODE_RELATIONAL_OP,
 } NodeType;
 
 // Enum para tipos de dados
@@ -44,55 +48,67 @@ typedef struct ASTNode {
     NodeType type;
 
     union {
-        int number;      // Para NODE_NUMBER (mantido por compatibilidade)
-        float floatNum;  // Para NODE_FLOAT
-        char* name;      // PARA NODE_ID e NODE_VAR
+        int number;
+        float floatNum;
+        char* name;
 
         struct {
-            DataType varType;  // Tipo da variável (int ou float)
+            DataType varType;
             char* name;
-        } varDecl;  // Para NODE_VAR com tipo
+        } varDecl;
 
         struct {
-            char op; // operador: '+', '-', '*', '/'
+            char op;
             struct ASTNode* left;
             struct ASTNode* right;
-        } binaryOp; // Para NODE_BIN_OP
+        } binaryOp;
         
         struct {
-            struct ASTNode* lvalue; // variável
-            struct ASTNode* rvalue; // expressão
-        } assign; // Para NODE_ASSIGN
+            struct ASTNode* lvalue;
+            struct ASTNode* rvalue;
+        } assign;
 
         struct {
             struct ASTNode* expression; 
-        } statement; // Para NODE_PRINT e NODE_RETURN
+        } statement;
 
         struct {
             struct ASTNode* statement;
             struct ASTNode* next;
-        } stmtList; // Para NODE_STMT_LIST
+        } stmtList;
         
         struct {
             char* name;
-            struct ASTNode* body;   // corpo da função
-        } funcDef; // Para NODE_FUNC_DEF
+            struct ASTNode* body;
+        } funcDef;
 
         struct {
             char* name;
-        } funcCall; // Para NODE_FUNC_CALL
+        } funcCall;
 
-        // Novo nó para declaração de array
         struct{
             char *name;
-            struct ASTNode *size; // O tamanho pode ser uma expressão, ex: arr[x+1]
+            struct ASTNode *size;
         }arrayDeclNode;
 
-        // Novo nó para acesso a um elemento do array
         struct  {
-            struct ASTNode *arrayName; // Nó do tipo ID
-            struct ASTNode *index;    // A expressão do índice
+            struct ASTNode *arrayName;
+            struct ASTNode *index;
         }arrayAccessNode;
+
+        // Novo nó para estruturas condicionais
+        struct {
+            struct ASTNode* condition;
+            struct ASTNode* thenBranch;
+            struct ASTNode* elseBranch;
+        } ifNode;
+
+        // Novo nó para operadores relacionais
+        struct {
+            char* op; // "==", "!=", "<", ">", "<=", ">="
+            struct ASTNode* left;
+            struct ASTNode* right;
+        } relationalOp;
 
     } data;
 
@@ -120,6 +136,10 @@ void freeAst(ASTNode* node);
 // Funções para Array
 ASTNode* createArrayDeclNode(char* name, ASTNode* size);
 ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index);
+
+// Funções para estruturas condicionais
+ASTNode* createIfNode(ASTNode* condition, ASTNode* thenBranch, ASTNode* elseBranch);
+ASTNode* createRelationalOpNode(char* op, ASTNode* left, ASTNode* right);
 
 const char* nodeTypeToString(NodeType type);
 

@@ -115,6 +115,22 @@ ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index) {
     return (ASTNode*) node;
 }
 
+ASTNode* createIfNode(ASTNode* condition, ASTNode* thenBranch, ASTNode* elseBranch) {
+    ASTNode* node = createNode(NODE_IF);
+    node->data.ifNode.condition = condition;
+    node->data.ifNode.thenBranch = thenBranch;
+    node->data.ifNode.elseBranch = elseBranch;
+    return node;
+}
+
+ASTNode* createRelationalOpNode(char* op, ASTNode* left, ASTNode* right) {
+    ASTNode* node = createNode(NODE_RELATIONAL_OP);
+    node->data.relationalOp.op = strdup(op);
+    node->data.relationalOp.left = left;
+    node->data.relationalOp.right = right;
+    return node;
+}
+
 void printAst(ASTNode* node, int level) {
     if (!node) return;
 
@@ -174,6 +190,25 @@ void printAst(ASTNode* node, int level) {
             printAst(node->data.arrayAccessNode.arrayName, level + 1);
             printAst(node->data.arrayAccessNode.index, level + 1);
             break;
+        case NODE_IF:
+            printf("If: \n");
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Condicao: \n");
+            printAst(node->data.ifNode.condition, level + 2);
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Then: \n");
+            printAst(node->data.ifNode.thenBranch, level + 2);
+            if (node->data.ifNode.elseBranch) {
+                for (int i = 0; i < level + 1; i++) printf("  ");
+                printf("Else: \n");
+                printAst(node->data.ifNode.elseBranch, level + 2);
+            }
+            break;
+        case NODE_RELATIONAL_OP:
+            printf("Operador Relacional: %s\n", node->data.relationalOp.op);
+            printAst(node->data.relationalOp.left, level + 1);
+            printAst(node->data.relationalOp.right, level + 1);
+            break;
         default:
             printf("Tipo de no desconhecido \n");
             break;
@@ -225,6 +260,16 @@ void freeAst(ASTNode* node) {
             freeAst(node->data.arrayAccessNode.arrayName);
             freeAst(node->data.arrayAccessNode.index);
             break;
+        case NODE_IF:
+            freeAst(node->data.ifNode.condition);
+            freeAst(node->data.ifNode.thenBranch);
+            freeAst(node->data.ifNode.elseBranch);
+            break;
+        case NODE_RELATIONAL_OP:
+            free(node->data.relationalOp.op);
+            freeAst(node->data.relationalOp.left);
+            freeAst(node->data.relationalOp.right);
+            break;
         default:
             break;
     }
@@ -247,6 +292,8 @@ const char* nodeTypeToString(NodeType type) {
         case NODE_FUNC_DEF: return "NODE_FUNC_DEF";
         case NODE_ARRAY_DECL: return "NODE_ARRAY_DECL";
         case NODE_ARRAY_ACCESS: return "NODE_ARRAY_ACCESS";
+        case NODE_IF: return "NODE_IF";
+        case NODE_RELATIONAL_OP: return "NODE_RELATIONAL_OP";
         default: return "UNKNOWN_NODE";
     }
 }

@@ -19,17 +19,19 @@ ASTNode *astRoot = NULL;
     float fval;
     char *sval;
     struct ASTNode* node;
-    int dataType;  // Mudado de DataType para int
+    int dataType;
 }
 
-%token INT FLOAT PRINT RETURN
+%token INT FLOAT PRINT RETURN IF ELSE
+%token EQ NEQ LT GT LEQ GEQ
 %token <ival> NUMBER
 %token <fval> FLOAT_NUM
 %token <sval> ID
 
-%type <node> expr stmt stmtList functionDef program
+%type <node> expr stmt stmtList functionDef program condition
 %type <dataType> type
 
+%left EQ NEQ LT GT LEQ GEQ
 %left '+' '-'
 %left '*' '/'
 
@@ -84,7 +86,22 @@ stmt:
                             }
     | PRINT expr ';'        { $$ = createPrintNode($2); }
     | RETURN expr ';'       { $$ = createReturnNode($2); }
+    | IF '(' condition ')' '{' stmtList '}' { 
+                                $$ = createIfNode($3, $6, NULL); 
+                            }
+    | IF '(' condition ')' '{' stmtList '}' ELSE '{' stmtList '}' { 
+                                $$ = createIfNode($3, $6, $10); 
+                            }
     | expr ';'              { $$ = $1; }
+    ;
+
+condition:
+      expr EQ expr          { $$ = createRelationalOpNode("==", $1, $3); }
+    | expr NEQ expr         { $$ = createRelationalOpNode("!=", $1, $3); }
+    | expr LT expr          { $$ = createRelationalOpNode("<", $1, $3); }
+    | expr GT expr          { $$ = createRelationalOpNode(">", $1, $3); }
+    | expr LEQ expr         { $$ = createRelationalOpNode("<=", $1, $3); }
+    | expr GEQ expr         { $$ = createRelationalOpNode(">=", $1, $3); }
     ;
 
 expr:

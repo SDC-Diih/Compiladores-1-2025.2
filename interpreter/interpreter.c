@@ -359,6 +359,13 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
+        case NODE_WHILE: {
+            while (evaluateCondition(node->data.whileNode.condition)) {
+                evaluateNode(node->data.whileNode.body);
+            }
+            break;
+        }
+
         case NODE_STMT_LIST: {
             evaluateNode(node->data.stmtList.statement);
             if (node->data.stmtList.next) {

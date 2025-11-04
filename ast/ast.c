@@ -123,6 +123,13 @@ ASTNode* createIfNode(ASTNode* condition, ASTNode* thenBranch, ASTNode* elseBran
     return node;
 }
 
+ASTNode* createWhileNode(ASTNode* condition, ASTNode* body) {
+    ASTNode* node = createNode(NODE_WHILE);
+    node->data.whileNode.condition = condition;
+    node->data.whileNode.body = body;
+    return node;
+}
+
 ASTNode* createRelationalOpNode(char* op, ASTNode* left, ASTNode* right) {
     ASTNode* node = createNode(NODE_RELATIONAL_OP);
     node->data.relationalOp.op = strdup(op);
@@ -204,6 +211,15 @@ void printAst(ASTNode* node, int level) {
                 printAst(node->data.ifNode.elseBranch, level + 2);
             }
             break;
+        case NODE_WHILE:
+            printf("While: \n");
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Condicao: \n");
+            printAst(node->data.whileNode.condition, level + 2);
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Body: \n");
+            printAst(node->data.whileNode.body, level + 2);
+            break;
         case NODE_RELATIONAL_OP:
             printf("Operador Relacional: %s\n", node->data.relationalOp.op);
             printAst(node->data.relationalOp.left, level + 1);
@@ -265,6 +281,10 @@ void freeAst(ASTNode* node) {
             freeAst(node->data.ifNode.thenBranch);
             freeAst(node->data.ifNode.elseBranch);
             break;
+        case NODE_WHILE:
+            freeAst(node->data.whileNode.condition);
+            freeAst(node->data.whileNode.body);
+            break;
         case NODE_RELATIONAL_OP:
             free(node->data.relationalOp.op);
             freeAst(node->data.relationalOp.left);
@@ -293,6 +313,7 @@ const char* nodeTypeToString(NodeType type) {
         case NODE_ARRAY_DECL: return "NODE_ARRAY_DECL";
         case NODE_ARRAY_ACCESS: return "NODE_ARRAY_ACCESS";
         case NODE_IF: return "NODE_IF";
+        case NODE_WHILE: return "NODE_WHILE";
         case NODE_RELATIONAL_OP: return "NODE_RELATIONAL_OP";
         default: return "UNKNOWN_NODE";
     }

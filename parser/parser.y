@@ -22,7 +22,7 @@ ASTNode *astRoot = NULL;
     int dataType;
 }
 
-%token INT FLOAT PRINT RETURN IF ELSE
+%token INT FLOAT PRINT RETURN IF ELSE WHILE
 %token EQ NEQ LT GT LEQ GEQ
 %token <ival> NUMBER
 %token <fval> FLOAT_NUM
@@ -91,6 +91,9 @@ stmt:
                             }
     | IF '(' condition ')' '{' stmtList '}' ELSE '{' stmtList '}' { 
                                 $$ = createIfNode($3, $6, $10); 
+                            }
+    | WHILE '(' condition ')' '{' stmtList '}' {
+                                $$ = createWhileNode($3, $6);
                             }
     | expr ';'              { $$ = $1; }
     ;

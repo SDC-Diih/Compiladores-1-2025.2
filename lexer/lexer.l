@@ -15,6 +15,7 @@
 "return"                { return RETURN; }
 "if"                    { return IF; }
 "else"                  { return ELSE; }
+"while"                 { return WHILE; }
 "=="                    { return EQ; }
 "!="                    { return NEQ; }
 "<="                    { return LEQ; }

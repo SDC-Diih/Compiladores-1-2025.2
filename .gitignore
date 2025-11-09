@@ -5,3 +5,4 @@ a.out
 lex.yy.c
 src/interp*
 .vscode
+testeCases/results.txt

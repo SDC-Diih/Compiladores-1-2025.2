@@ -39,52 +39,93 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 
 ## Como Compilar e Executar
 
-Este projeto pode ser compilado usando o `Makefile`:
+Este projeto pode ser compilado usando o Makefile. O Makefile foi configurado para permitir a compilação com ou sem a impressão da Árvore Sintática Abstrata (AST) para fins de depuração.
 
+### 1. Compilando o Interpretador
 
-### Compilando e Executando
+#### Compilação Padrão (Sem AST)
 
-
-**1. Para Compilar:**
-Execute o seguinte comando no terminal:
+Para compilar o interpretador sem a impressão da AST (modo de execução normal), execute:
 
 ```bash
 make
 ```
 
-**2. Para Executar:**
-Após a compilação, use o comando:
+Isso irá gerar o executável em src/interp.
 
+#### Compilação com Impressão da AST
+
+Para compilar o interpretador habilitando a visualização da AST antes da execução do código, passe a variável PRINT_AST=1 para o make:
+
+```bash
+make PRINT_AST=1
+```
+
+Isso define a flag PRINT_AST que é usada pelo src/main.c para imprimir a árvore.
+
+### 2. Executando o Interpretador
+
+Após a compilação, você pode executar o interpretador de duas formas:
+
+#### Modo Interativo
+
+Execute o programa e digite o código C diretamente no terminal:
 ```bash
 ./src/interp
 ```
 
-O programa irá aguardar a entrada do código. Após digitar as linhas de código, pressione Ctrl+D (em Linux/macOS) ou Ctrl+Z + Enter (em Windows) para finalizar a entrada. A AST correspondente ao código será impressa no console e também seu resultado.
+O programa irá aguardar a entrada do código. Após digitar as linhas de código, pressione Ctrl+D (em Linux/macOS) ou Ctrl+Z + Enter (em Windows) para finalizar a entrada.
 
-**3. Para Executar Testes:**
-use o comando:
+O interpretador irá executar o código. Se compilado com PRINT_AST=1, ele exibirá a AST antes de imprimir o resultado da execução.
+
+#### Executando Arquivos de Teste
+
+Você pode executar um arquivo .c diretamente passando-o como entrada (stdin):
 
 ```bash
-./src/interp < testeCases/teste[número do teste].c
+./src/interp < testeCases/teste1.c
 ```
 
-### Compilar e executar ao mesmo tempo
+### 3. Comandos Adicionais do Makefile
 
-Mais fácil pois necessita de somente um comando
+O Makefile inclui outros alvos úteis:
+
+#### make run 
+
+Compila e executa o interpretador em modo interativo. Por padrão, compila sem AST.
 
 ```bash
 make run
 ```
 
-### Limpando os Arquivos Gerados
+Para compilar com AST e executar:
 
-Para remover todos os arquivos compilados e gerados pelo Bison/Flex (incluindo o executável src/interp), use o comando de limpeza.
+```bash
+make run PRINT_AST=1
+```
+
+#### make test 
+
+Este comando compila o interpretador e executa automaticamente todos os arquivos teste*.c localizados no diretório testeCases. Os resultados de todos os testes (incluindo a saída da AST, se habilitada) são concatenados e salvos em testeCases/results.txt.
+
+```bash
+make test
+```
+
+Para rodar os testes e incluir a impressão da AST nos resultados:
+
+```bash
+make test PRINT_AST=1
+```
+
+#### make clean 
+
+Remove todos os arquivos compilados e gerados pelo Bison/Flex (incluindo o executável src/interp e o arquivo testeCases/results.txt).
 
 ```bash
 make clean
 ```
 
-_É uma boa prática rodar este comando antes de compilar uma nova versão ou simplesmente para limpar o diretório do projeto._
 
 ## Referências
 

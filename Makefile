@@ -34,8 +34,16 @@ FLEX_FLAGS  = -o $(FLEX_C)
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
   LDFLAGS = -ll
+  # Verificar se gtimeout existe, senão usar alternativa
+  TIMEOUT_CMD := $(shell which gtimeout 2>/dev/null || echo "")
+  ifeq ($(TIMEOUT_CMD),)
+    TIMEOUT_CMD = perl -e 'alarm(5); exec @ARGV' --
+  else
+    TIMEOUT_CMD = gtimeout 5s
+  endif
 else
   LDFLAGS = -lfl
+  TIMEOUT_CMD = timeout 5s
 endif
 
 # --- REGRAS DO MAKE ---
@@ -81,7 +89,7 @@ test:
 		echo "Rodando $$file..."; \
 		echo "--------------------------------------------------" >> $$OUTPUT_FILE; \
 		echo ">>> START >>> $$(basename $$file)" >> $$OUTPUT_FILE; \
-		if timeout 5s ./$(EXEC) < $$file >> $$OUTPUT_FILE 2>&1; then \
+		if $(TIMEOUT_CMD) ./$(EXEC) < $$file >> $$OUTPUT_FILE 2>&1; then \
 			echo "[OK]" >> $$OUTPUT_FILE; \
 		else \
 			echo "[ERRO ou TIMEOUT]" >> $$OUTPUT_FILE; \

@@ -64,9 +64,9 @@
 - Exemplos de teste com laços e decisões.
 
 **Tarefas**
-- [ ] Implementar suporte a `if` e `while`/`for`.
-- [ ] Ampliar análise semântica para condições.
-- [ ] Validar com programas simples.
+- [X] Implementar suporte a `if` e `while`/`for` (for não incluso)
+- [X] Ampliar análise semântica para condições.
+- [X] Validar com programas simples.
 
 ## Sprint 5 – Funções e Extensões
 **Objetivos**
@@ -79,10 +79,10 @@
 - Pilha de contexto para escopo local.
 
 **Tarefas**
-- [ ] Implementar declaração e chamada de funções. 
-- [ ] Criar pilha de variáveis locais.
-- [ ] Adicionar otimização.
-- [ ] Testar funções simples.
+- [X] Implementar declaração e chamada de funções. 
+- [SKIPPED] Criar pilha de variáveis locais. (não incluso)
+- [X] Tentar adicionar otimização. 
+- [X] Testar funções simples.
 
 
 ## Sprint 6 – Refinamento e Entrega Final
@@ -93,13 +93,11 @@
 
 **Entregas**
 - Interpretador completo e testado.
-- Melhorar otimização de interpretação.
 - Documentação clara (gramática, exemplos, limitações).
 - Apresentação pronta.
 
 **Tarefas**
-- [ ] Revisar e corrigir bugs.
-- [ ] Criar testes de integração.
-- [ ] Melhorar otimização 
+- [X] Revisar e corrigir bugs.
+- [X] Criar testes finais
 - [ ] Documentar funcionamento e exemplos.
 - [ ] Preparar demo para apresentação final.

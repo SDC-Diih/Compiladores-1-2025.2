@@ -26,6 +26,7 @@ typedef enum {
     // Condicionais
     NODE_IF,
     NODE_WHILE,
+    NODE_FOR,
     NODE_RELATIONAL_OP,
 } NodeType;
 
@@ -110,6 +111,14 @@ typedef struct ASTNode {
             struct ASTNode* body;
         } whileNode;
 
+        // Novo nó para estrutura for
+        struct {
+            struct ASTNode* init;
+            struct ASTNode* condition;
+            struct ASTNode* increment;
+            struct ASTNode* body;
+        } forNode;
+
         // Novo nó para operadores relacionais
         struct {
             char* op; // "==", "!=", "<", ">", "<=", ">="
@@ -147,6 +156,7 @@ ASTNode* createArrayAccessNode(ASTNode* arrayName, ASTNode* index);
 // Funções para estruturas condicionais
 ASTNode* createIfNode(ASTNode* condition, ASTNode* thenBranch, ASTNode* elseBranch);
 ASTNode* createWhileNode(ASTNode* condition, ASTNode* body);
+ASTNode* createForNode(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body);
 ASTNode* createRelationalOpNode(char* op, ASTNode* left, ASTNode* right);
 
 const char* nodeTypeToString(NodeType type);

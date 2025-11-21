@@ -366,6 +366,15 @@ int evaluateNode(ASTNode* node) {
             break;
         }
 
+        case NODE_FOR: {
+            evaluateNode(node->data.forNode.init);
+            while (evaluateCondition(node->data.forNode.condition)) {
+                evaluateNode(node->data.forNode.body);
+                evaluateNodeValue(node->data.forNode.increment);
+            }
+            break;
+        }
+
         case NODE_STMT_LIST: {
             evaluateNode(node->data.stmtList.statement);
             if (node->data.stmtList.next) {

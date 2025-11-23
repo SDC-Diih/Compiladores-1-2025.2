@@ -130,6 +130,15 @@ ASTNode* createWhileNode(ASTNode* condition, ASTNode* body) {
     return node;
 }
 
+ASTNode* createForNode(ASTNode* init, ASTNode* condition, ASTNode* increment, ASTNode* body) {
+    ASTNode* node = createNode(NODE_FOR);
+    node->data.forNode.init = init;
+    node->data.forNode.condition = condition;
+    node->data.forNode.increment = increment;
+    node->data.forNode.body = body;
+    return node;
+}
+
 ASTNode* createRelationalOpNode(char* op, ASTNode* left, ASTNode* right) {
     ASTNode* node = createNode(NODE_RELATIONAL_OP);
     node->data.relationalOp.op = strdup(op);
@@ -220,6 +229,21 @@ void printAst(ASTNode* node, int level) {
             printf("Body: \n");
             printAst(node->data.whileNode.body, level + 2);
             break;
+        case NODE_FOR:
+            printf("For: \n");
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Init: \n");
+            printAst(node->data.forNode.init, level + 2);
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Condicao: \n");
+            printAst(node->data.forNode.condition, level + 2);
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Increment: \n");
+            printAst(node->data.forNode.increment, level + 2);
+            for (int i = 0; i < level + 1; i++) printf("  ");
+            printf("Body: \n");
+            printAst(node->data.forNode.body, level + 2);
+            break;
         case NODE_RELATIONAL_OP:
             printf("Operador Relacional: %s\n", node->data.relationalOp.op);
             printAst(node->data.relationalOp.left, level + 1);
@@ -285,6 +309,12 @@ void freeAst(ASTNode* node) {
             freeAst(node->data.whileNode.condition);
             freeAst(node->data.whileNode.body);
             break;
+        case NODE_FOR:
+            freeAst(node->data.forNode.init);
+            freeAst(node->data.forNode.condition);
+            freeAst(node->data.forNode.increment);
+            freeAst(node->data.forNode.body);
+            break;
         case NODE_RELATIONAL_OP:
             free(node->data.relationalOp.op);
             freeAst(node->data.relationalOp.left);
@@ -314,6 +344,7 @@ const char* nodeTypeToString(NodeType type) {
         case NODE_ARRAY_ACCESS: return "NODE_ARRAY_ACCESS";
         case NODE_IF: return "NODE_IF";
         case NODE_WHILE: return "NODE_WHILE";
+        case NODE_FOR: return "NODE_FOR";
         case NODE_RELATIONAL_OP: return "NODE_RELATIONAL_OP";
         default: return "UNKNOWN_NODE";
     }

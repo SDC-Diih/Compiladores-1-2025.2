@@ -64,7 +64,7 @@
 - Exemplos de teste com laços e decisões.
 
 **Tarefas**
-- [X] Implementar suporte a `if` e `while`/`for` (for não incluso)
+- [X] Implementar suporte a `if` e `while`/`for`
 - [X] Ampliar análise semântica para condições.
 - [X] Validar com programas simples.
 
@@ -99,5 +99,5 @@
 **Tarefas**
 - [X] Revisar e corrigir bugs.
 - [X] Criar testes finais
-- [ ] Documentar funcionamento e exemplos.
+- [x] Documentar funcionamento e exemplos.
 - [ ] Preparar demo para apresentação final.

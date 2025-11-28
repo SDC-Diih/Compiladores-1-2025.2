@@ -100,4 +100,4 @@
 - [X] Revisar e corrigir bugs.
 - [X] Criar testes finais
 - [x] Documentar funcionamento e exemplos.
-- [ ] Preparar demo para apresentação final.
+- [ ] Criar zip para apresentação final.

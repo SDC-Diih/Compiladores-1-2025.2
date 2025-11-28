@@ -32,6 +32,25 @@ Nosso interpretador oferece suporte para um subconjunto essencial da linguagem C
 - **Funções:**
   - Execução  de funções e execução a partir de uma função principal `main()`.
 
+## Documentação Técnica
+
+### Especificações Completas
+- **[Especificações do Interpretador](docs/especificacoes-compilador.md)**: Documentação completa das funcionalidades suportadas e não suportadas, incluindo tipos de dados, operadores, estruturas de controle, limitações técnicas e exemplos de uso.
+
+### Planejamento do Projeto
+- **[Planejamento de Sprints](docs/planejamento-sprints.md)**: Cronograma detalhado do desenvolvimento do projeto, dividido em 6 sprints com objetivos, entregas e tarefas específicas para cada fase.
+
+### Decisões Técnicas por Semana
+Cada semana do projeto possui documentação específica das decisões técnicas tomadas:
+- **Semana 2**: [Decisões Técnicas](docs/semana02/decisoes-tecnicas.md) - Definição do interpretador C
+- **Semana 3**: [Decisões Técnicas](docs/semana03/decisoes-tecnicas.md) - Pseudo-C simplificado 
+- **Semana 4**: [Decisões Técnicas](docs/semana04/decisoes-tecnicas.md) - Makefile e interpretador básico
+- **Semana 5**: [Decisões Técnicas](docs/semana05/decisoes-tecnicas.md) - Atribuição, divisão por zero, comentários e float
+- **Semana 6**: [Decisões Técnicas](docs/semana06/decisoes-tecnicas.md) - Float, AST, funções e automatização de testes
+- **Semana 7**: [Decisões Técnicas](docs/semana07/decisoes-tecnicas.md) - Estruturas de controle e análise semântica
+- **Semana 8**: [Decisões Técnicas](docs/semana08/decisoes-tecnicas.md) - Arrays e estruturas condicionais
+- **Semana 9**: [Decisões Técnicas](docs/semana09/decisoes-tecnicas.md) - Loops e estruturas de repetição
+
 ## Pré-requisitos
 
 - Necessário utilizar Linux, WSL ou macOS

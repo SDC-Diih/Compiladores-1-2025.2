@@ -28,7 +28,7 @@ ASTNode *astRoot = NULL;
 %token <fval> FLOAT_NUM
 %token <sval> ID
 
-%type <node> expr stmt stmtList functionDef program condition
+%type <node> expr stmt stmtList functionDef program condition assignment
 %type <dataType> type
 
 %left EQ NEQ LT GT LEQ GEQ
@@ -95,10 +95,14 @@ stmt:
     | WHILE '(' condition ')' '{' stmtList '}' {
                                 $$ = createWhileNode($3, $6);
                             }
-    | FOR '(' stmt condition ';' expr ')' '{' stmtList '}' {
-                                $$ = createForNode($3, $4, $6, $9);
+    | FOR '(' assignment ';' condition ';' assignment ')' '{' stmtList '}' {
+                                $$ = createForNode($3, $5, $7, $10);
                             }
     | expr ';'              { $$ = $1; }
+    ;
+
+assignment:
+      ID '=' expr           { $$ = createAssignNode(createIdNode($1), $3); }
     ;
 
 condition:

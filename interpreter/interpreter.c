@@ -370,7 +370,7 @@ int evaluateNode(ASTNode* node) {
             evaluateNode(node->data.forNode.init);
             while (evaluateCondition(node->data.forNode.condition)) {
                 evaluateNode(node->data.forNode.body);
-                evaluateNodeValue(node->data.forNode.increment);
+                evaluateNode(node->data.forNode.increment);
             }
             break;
         }
